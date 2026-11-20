@@ -53,6 +53,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
@@ -75,22 +76,34 @@ fun MoviePosterCard(
     movie: Movie,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
-    showTitle: Boolean = false
+    cardWidth: Dp? = 124.dp,
+    showTitle: Boolean = false,
+    showRating: Boolean = true
 ) {
+    val cardModifier = if (cardWidth != null) {
+        modifier.width(cardWidth)
+    } else {
+        modifier
+    }
+
     Card(
-        modifier = modifier
-            .width(124.dp)
-            .clickable { onClick() },
+        onClick = onClick,
+        modifier = cardModifier,
         shape = RoundedCornerShape(16.dp),
-        colors = CardDefaults.cardColors(containerColor = DarkSurfaceVariant),
-        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+        colors = CardDefaults.cardColors(
+            containerColor = DarkSurfaceVariant
+        ),
+        border = BorderStroke(1.dp, Color.White.copy(alpha = 0.08f)),
+        elevation = CardDefaults.cardElevation(
+            defaultElevation = 4.dp,
+            pressedElevation = 8.dp
+        )
     ) {
         Column {
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
                     .aspectRatio(2f / 3f)
-                    .clip(RoundedCornerShape(16.dp))
                     .background(DarkSurfaceVariant)
             ) {
                 AsyncImage(
@@ -99,10 +112,53 @@ fun MoviePosterCard(
                     modifier = Modifier.fillMaxSize(),
                     contentScale = ContentScale.Crop
                 )
+
+                // Subtle gradient overlay for cinematic contrast
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .background(
+                            Brush.verticalGradient(
+                                colorStops = arrayOf(
+                                    0.0f to Color.Black.copy(alpha = 0.35f),
+                                    0.25f to Color.Transparent,
+                                    0.75f to Color.Transparent,
+                                    1.0f to Color.Black.copy(alpha = 0.45f)
+                                )
+                            )
+                        )
+                )
+
+                // Rating Badge on top right
+                if (showRating && movie.voteAverage > 0) {
+                    Box(
+                        modifier = Modifier
+                            .align(Alignment.TopEnd)
+                            .padding(6.dp)
+                            .background(Color.Black.copy(alpha = 0.7f), RoundedCornerShape(8.dp))
+                            .padding(horizontal = 6.dp, vertical = 2.dp)
+                    ) {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Icon(
+                                imageVector = Icons.Default.Star,
+                                contentDescription = null,
+                                tint = StarGold,
+                                modifier = Modifier.size(11.dp)
+                            )
+                            Spacer(modifier = Modifier.width(3.dp))
+                            Text(
+                                text = String.format(Locale.US, "%.1f", movie.voteAverage),
+                                color = LightText,
+                                fontSize = 10.sp,
+                                fontWeight = FontWeight.Bold
+                            )
+                        }
+                    }
+                }
             }
 
             if (showTitle) {
-                Spacer(modifier = Modifier.height(6.dp))
+                Spacer(modifier = Modifier.height(4.dp))
                 Text(
                     text = movie.title,
                     color = LightText,
@@ -110,7 +166,7 @@ fun MoviePosterCard(
                     fontWeight = FontWeight.SemiBold,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
-                    modifier = Modifier.padding(horizontal = 6.dp, vertical = 4.dp)
+                    modifier = Modifier.padding(horizontal = 8.dp, vertical = 6.dp)
                 )
             }
         }

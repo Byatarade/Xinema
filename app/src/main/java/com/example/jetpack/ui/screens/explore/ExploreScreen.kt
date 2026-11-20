@@ -1,5 +1,6 @@
 package com.example.jetpack.ui.screens.explore
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -17,6 +18,8 @@ import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
@@ -30,10 +33,10 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.res.stringResource
 import com.example.jetpack.R
 import com.example.jetpack.ui.components.ErrorView
 import com.example.jetpack.ui.components.MoviePosterCard
@@ -77,7 +80,7 @@ fun ExploreScreen(
                 .padding(innerPadding)
                 .background(DarkBackground)
         ) {
-            // Horizontal Genre Chips
+            // Horizontal Genre Chips (Wrapped in Card)
             LazyRow(
                 contentPadding = PaddingValues(horizontal = 16.dp),
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
@@ -85,20 +88,21 @@ fun ExploreScreen(
             ) {
                 items(uiState.genres, key = { it.id }) { genre ->
                     val isSelected = genre.id == uiState.selectedGenreId
-                    Box(
-                        modifier = Modifier
-                            .background(
-                                color = if (isSelected) NetflixRed else DarkSurface,
-                                shape = RoundedCornerShape(16.dp)
-                            )
-                            .clickable { viewModel.selectGenre(genre.id) }
-                            .padding(horizontal = 14.dp, vertical = 8.dp)
+                    Card(
+                        onClick = { viewModel.selectGenre(genre.id) },
+                        shape = RoundedCornerShape(16.dp),
+                        colors = CardDefaults.cardColors(
+                            containerColor = if (isSelected) NetflixRed else DarkSurface
+                        ),
+                        border = if (!isSelected) BorderStroke(1.dp, Color.White.copy(alpha = 0.08f)) else null,
+                        elevation = CardDefaults.cardElevation(defaultElevation = if (isSelected) 4.dp else 1.dp)
                     ) {
                         Text(
                             text = genre.name,
                             color = if (isSelected) Color.White else MutedText,
                             fontSize = 12.sp,
-                            fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Medium
+                            fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Medium,
+                            modifier = Modifier.padding(horizontal = 14.dp, vertical = 8.dp)
                         )
                     }
                 }
@@ -120,16 +124,18 @@ fun ExploreScreen(
                 }
                 else -> {
                     LazyVerticalGrid(
-                        columns = GridCells.Adaptive(minSize = 100.dp),
+                        columns = GridCells.Adaptive(minSize = 105.dp),
                         contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
-                        verticalArrangement = Arrangement.spacedBy(10.dp),
-                        horizontalArrangement = Arrangement.spacedBy(10.dp),
+                        verticalArrangement = Arrangement.spacedBy(12.dp),
+                        horizontalArrangement = Arrangement.spacedBy(12.dp),
                         modifier = Modifier.fillMaxSize()
                     ) {
                         items(uiState.movies, key = { it.id }) { movie ->
                             MoviePosterCard(
                                 movie = movie,
-                                onClick = { onMovieClick(movie.id) }
+                                onClick = { onMovieClick(movie.id) },
+                                cardWidth = null,
+                                modifier = Modifier.fillMaxWidth()
                             )
                         }
                     }

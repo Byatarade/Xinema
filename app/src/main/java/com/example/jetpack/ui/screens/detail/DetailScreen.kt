@@ -2,6 +2,7 @@ package com.example.jetpack.ui.screens.detail
 
 import android.content.Intent
 import android.net.Uri
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -515,11 +516,12 @@ fun VideoThumbnailItem(
     onClick: () -> Unit
 ) {
     Card(
-        modifier = Modifier
-            .width(200.dp)
-            .clickable { onClick() },
-        shape = RoundedCornerShape(12.dp),
-        colors = CardDefaults.cardColors(containerColor = DarkSurface)
+        onClick = onClick,
+        modifier = Modifier.width(200.dp),
+        shape = RoundedCornerShape(14.dp),
+        colors = CardDefaults.cardColors(containerColor = DarkSurface),
+        border = BorderStroke(1.dp, Color.White.copy(alpha = 0.08f)),
+        elevation = CardDefaults.cardElevation(defaultElevation = 3.dp, pressedElevation = 6.dp)
     ) {
         Column {
             Box(

@@ -150,16 +150,19 @@ fun SearchScreen(
                 }
                 else -> {
                     LazyVerticalGrid(
-                        columns = GridCells.Adaptive(minSize = 100.dp),
+                        columns = GridCells.Adaptive(minSize = 105.dp),
                         contentPadding = PaddingValues(bottom = 16.dp),
-                        verticalArrangement = Arrangement.spacedBy(10.dp),
-                        horizontalArrangement = Arrangement.spacedBy(10.dp),
+                        verticalArrangement = Arrangement.spacedBy(12.dp),
+                        horizontalArrangement = Arrangement.spacedBy(12.dp),
                         modifier = Modifier.fillMaxSize()
                     ) {
                         items(uiState.results, key = { it.id }) { movie ->
                             MoviePosterCard(
                                 movie = movie,
-                                onClick = { onMovieClick(movie.id) }
+                                onClick = { onMovieClick(movie.id) },
+                                cardWidth = null,
+                                modifier = Modifier.fillMaxWidth(),
+                                showTitle = true
                             )
                         }
                     }
