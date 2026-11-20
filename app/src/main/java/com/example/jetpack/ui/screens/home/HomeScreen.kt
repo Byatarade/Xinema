@@ -1,61 +1,55 @@
 package com.example.jetpack.ui.screens.home
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.filled.Search
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.example.jetpack.domain.model.Movie
 import com.example.jetpack.ui.components.ErrorView
 import com.example.jetpack.ui.components.HeroBanner
 import com.example.jetpack.ui.components.LoadingView
 import com.example.jetpack.ui.components.SectionRow
 import com.example.jetpack.ui.theme.DarkBackground
-import com.example.jetpack.ui.theme.NetflixRed
+import com.example.jetpack.ui.theme.DarkSurfaceVariant
+import com.example.jetpack.ui.theme.LightText
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(
     viewModel: HomeViewModel,
     onMovieClick: (Int) -> Unit,
+    onSearchClick: () -> Unit = {},
+    onSeeAllClick: () -> Unit = {},
     modifier: Modifier = Modifier
 ) {
     val uiState by viewModel.uiState.collectAsState()
 
     Scaffold(
-        topBar = {
-            TopAppBar(
-                title = {
-                    Text(
-                        text = "CINESTREAM",
-                        color = NetflixRed,
-                        fontWeight = FontWeight.Black,
-                        fontSize = 22.sp,
-                        letterSpacing = 2.sp
-                    )
-                },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = DarkBackground.copy(alpha = 0.95f)
-                )
-            )
-        },
         containerColor = DarkBackground,
         modifier = modifier
     ) { innerPadding ->
@@ -77,6 +71,23 @@ fun HomeScreen(
                 }
                 else -> {
                     val scrollState = rememberScrollState()
+
+                    // Convert TV shows to movies for preview section
+                    val tvAsMovies = uiState.tvShows.map { tv ->
+                        Movie(
+                            id = tv.id,
+                            title = tv.name,
+                            overview = tv.overview,
+                            posterPath = tv.posterPath,
+                            backdropPath = tv.backdropPath,
+                            releaseDate = tv.firstAirDate,
+                            voteAverage = tv.voteAverage,
+                            voteCount = tv.voteCount,
+                            genreIds = tv.genreIds,
+                            mediaType = "tv"
+                        )
+                    }
+
                     Column(
                         modifier = Modifier
                             .fillMaxSize()
@@ -91,65 +102,101 @@ fun HomeScreen(
                         Spacer(modifier = Modifier.height(16.dp))
 
                         SectionRow(
-                            title = "Now Playing in Theaters",
-                            movies = uiState.nowPlaying,
-                            onMovieClick = onMovieClick
-                        )
-
-                        Spacer(modifier = Modifier.height(16.dp))
-
-                        SectionRow(
-                            title = "Trending This Week",
+                            title = "Trending Now",
                             movies = uiState.trending,
-                            onMovieClick = onMovieClick
+                            onMovieClick = onMovieClick,
+                            onSeeAllClick = onSeeAllClick
                         )
-
-                        Spacer(modifier = Modifier.height(16.dp))
-
-                        SectionRow(
-                            title = "Popular on CineStream",
-                            movies = uiState.popular,
-                            onMovieClick = onMovieClick
-                        )
-
-                        Spacer(modifier = Modifier.height(16.dp))
-
-                        SectionRow(
-                            title = "Critically Acclaimed & Top Rated",
-                            movies = uiState.topRated,
-                            onMovieClick = onMovieClick
-                        )
-
-                        // Convert TV shows to movies for preview section
-                        val tvAsMovies = uiState.tvShows.map { tv ->
-                            Movie(
-                                id = tv.id,
-                                title = tv.name,
-                                overview = tv.overview,
-                                posterPath = tv.posterPath,
-                                backdropPath = tv.backdropPath,
-                                releaseDate = tv.firstAirDate,
-                                voteAverage = tv.voteAverage,
-                                voteCount = tv.voteCount,
-                                genreIds = tv.genreIds,
-                                mediaType = "tv"
-                            )
-                        }
 
                         if (tvAsMovies.isNotEmpty()) {
-                            Spacer(modifier = Modifier.height(16.dp))
+                            Spacer(modifier = Modifier.height(20.dp))
                             SectionRow(
-                                title = "Popular TV Shows",
+                                title = "Series",
                                 movies = tvAsMovies,
-                                onMovieClick = onMovieClick
+                                onMovieClick = onMovieClick,
+                                onSeeAllClick = onSeeAllClick
                             )
                         }
 
-                        Spacer(modifier = Modifier.height(32.dp))
+                        if (uiState.topRated.isNotEmpty()) {
+                            Spacer(modifier = Modifier.height(20.dp))
+                            SectionRow(
+                                title = "Korean TV Drama",
+                                movies = uiState.topRated,
+                                onMovieClick = onMovieClick,
+                                onSeeAllClick = onSeeAllClick
+                            )
+                        }
+
+                        if (uiState.popular.isNotEmpty()) {
+                            Spacer(modifier = Modifier.height(20.dp))
+                            SectionRow(
+                                title = "Popular Movies",
+                                movies = uiState.popular,
+                                onMovieClick = onMovieClick,
+                                onSeeAllClick = onSeeAllClick
+                            )
+                        }
+
+                        if (uiState.nowPlaying.isNotEmpty()) {
+                            Spacer(modifier = Modifier.height(20.dp))
+                            SectionRow(
+                                title = "Now Playing in Theaters",
+                                movies = uiState.nowPlaying,
+                                onMovieClick = onMovieClick,
+                                onSeeAllClick = onSeeAllClick
+                            )
+                        }
+
+                        Spacer(modifier = Modifier.height(40.dp))
+                    }
+
+                    // Floating Top Bar (Profile on Left, Search on Right)
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .statusBarsPadding()
+                            .padding(horizontal = 20.dp, vertical = 12.dp),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        // User Avatar
+                        Box(
+                            modifier = Modifier
+                                .size(40.dp)
+                                .clip(CircleShape)
+                                .background(DarkSurfaceVariant.copy(alpha = 0.85f)),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Person,
+                                contentDescription = "Profile",
+                                tint = LightText,
+                                modifier = Modifier.size(24.dp)
+                            )
+                        }
+
+                        // Search Button
+                        Box(
+                            modifier = Modifier
+                                .size(40.dp)
+                                .clip(CircleShape)
+                                .background(Color.Black.copy(alpha = 0.45f))
+                                .clickable { onSearchClick() },
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Search,
+                                contentDescription = "Search",
+                                tint = LightText,
+                                modifier = Modifier.size(22.dp)
+                            )
+                        }
                     }
                 }
             }
         }
     }
 }
+
 

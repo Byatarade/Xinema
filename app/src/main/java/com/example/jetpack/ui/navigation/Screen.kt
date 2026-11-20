@@ -2,14 +2,18 @@ package com.example.jetpack.ui.navigation
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Explore
+import androidx.compose.material.icons.filled.FileDownload
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.filled.VideoLibrary
 import androidx.compose.ui.graphics.vector.ImageVector
 
 sealed class Screen(val route: String, val title: String? = null, val icon: ImageVector? = null) {
     data object Home : Screen("home", "Home", Icons.Default.Home)
-    data object Search : Screen("search", "Search", Icons.Default.Search)
     data object Explore : Screen("explore", "Explore", Icons.Default.Explore)
+    data object Downloads : Screen("downloads", "Downloads", Icons.Default.FileDownload)
+    data object Library : Screen("library", "Library", Icons.Default.VideoLibrary)
+    data object Search : Screen("search", "Search", Icons.Default.Search)
 
     data object Detail : Screen("detail/{movieId}") {
         fun createRoute(movieId: Int): String = "detail/$movieId"
@@ -18,7 +22,9 @@ sealed class Screen(val route: String, val title: String? = null, val icon: Imag
 
 val bottomNavItems = listOf(
     Screen.Home,
-    Screen.Search,
-    Screen.Explore
+    Screen.Explore,
+    Screen.Downloads,
+    Screen.Library
 )
+
 

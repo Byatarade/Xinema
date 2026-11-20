@@ -8,8 +8,6 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.ExperimentalLayoutApi
-import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -19,6 +17,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
@@ -30,20 +29,19 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.FileDownload
+import androidx.compose.material.icons.filled.MoreHoriz
 import androidx.compose.material.icons.filled.PlayArrow
+import androidx.compose.material.icons.filled.ThumbUp
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -54,7 +52,6 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -65,16 +62,16 @@ import com.example.jetpack.domain.model.Cast
 import com.example.jetpack.domain.model.Video
 import com.example.jetpack.ui.components.ErrorView
 import com.example.jetpack.ui.components.LoadingView
-import com.example.jetpack.ui.components.RatingBadge
 import com.example.jetpack.ui.components.SectionRow
+import com.example.jetpack.ui.theme.AccentGreen
 import com.example.jetpack.ui.theme.DarkBackground
+import com.example.jetpack.ui.theme.DarkPill
 import com.example.jetpack.ui.theme.DarkSurface
 import com.example.jetpack.ui.theme.DarkSurfaceVariant
 import com.example.jetpack.ui.theme.LightText
 import com.example.jetpack.ui.theme.MutedText
 import com.example.jetpack.ui.theme.NetflixRed
 
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
 @Composable
 fun DetailScreen(
     viewModel: DetailViewModel,
@@ -86,23 +83,6 @@ fun DetailScreen(
     val context = LocalContext.current
 
     Scaffold(
-        topBar = {
-            TopAppBar(
-                title = { },
-                navigationIcon = {
-                    IconButton(onClick = onBackClick) {
-                        Icon(
-                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = "Back",
-                            tint = LightText
-                        )
-                    }
-                },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = Color.Transparent
-                )
-            )
-        },
         containerColor = DarkBackground,
         modifier = modifier
     ) { innerPadding ->
@@ -110,6 +90,7 @@ fun DetailScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(innerPadding)
+                .background(DarkBackground)
         ) {
             when {
                 uiState.isLoading -> LoadingView()
@@ -128,11 +109,11 @@ fun DetailScreen(
                             .fillMaxSize()
                             .verticalScroll(scrollState)
                     ) {
-                        // Backdrop Header with Gradient
+                        // 1. Backdrop Image with Top Action Buttons and "Preview" Badge
                         Box(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .height(260.dp)
+                                .height(280.dp)
                         ) {
                             AsyncImage(
                                 model = Constants.backdropUrl(movie.backdropPath)
@@ -142,170 +123,299 @@ fun DetailScreen(
                                 contentScale = ContentScale.Crop
                             )
 
+                            // Subtle bottom gradient
                             Box(
                                 modifier = Modifier
                                     .fillMaxSize()
                                     .background(
                                         Brush.verticalGradient(
-                                            colors = listOf(
-                                                Color.Transparent,
-                                                DarkBackground.copy(alpha = 0.7f),
-                                                DarkBackground
+                                            colorStops = arrayOf(
+                                                0.0f to Color.Black.copy(alpha = 0.5f),
+                                                0.4f to Color.Transparent,
+                                                0.8f to DarkBackground.copy(alpha = 0.8f),
+                                                1.0f to DarkBackground
                                             )
                                         )
                                     )
                             )
-                        }
 
-                        // Meta details
-                        Column(modifier = Modifier.padding(horizontal = 16.dp)) {
-                            Text(
-                                text = movie.title,
-                                color = LightText,
-                                style = MaterialTheme.typography.headlineMedium,
-                                fontWeight = FontWeight.Bold
-                            )
+                            // Top Back and More buttons
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .statusBarsPadding()
+                                    .padding(horizontal = 16.dp, vertical = 8.dp),
+                                horizontalArrangement = Arrangement.SpaceBetween,
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                // Back button
+                                Box(
+                                    modifier = Modifier
+                                        .size(38.dp)
+                                        .clip(CircleShape)
+                                        .background(Color.Black.copy(alpha = 0.55f))
+                                        .clickable { onBackClick() },
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    Icon(
+                                        imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                                        contentDescription = "Back",
+                                        tint = LightText,
+                                        modifier = Modifier.size(20.dp)
+                                    )
+                                }
 
-                            movie.tagline?.takeIf { it.isNotBlank() }?.let { tagline ->
-                                Spacer(modifier = Modifier.height(4.dp))
-                                Text(
-                                    text = "\"$tagline\"",
-                                    color = MutedText,
-                                    fontStyle = FontStyle.Italic,
-                                    fontSize = 14.sp
-                                )
+                                // More Options button
+                                Box(
+                                    modifier = Modifier
+                                        .size(38.dp)
+                                        .clip(CircleShape)
+                                        .background(Color.Black.copy(alpha = 0.55f))
+                                        .clickable { },
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    Icon(
+                                        imageVector = Icons.Default.MoreHoriz,
+                                        contentDescription = "More",
+                                        tint = LightText,
+                                        modifier = Modifier.size(22.dp)
+                                    )
+                                }
                             }
 
-                            Spacer(modifier = Modifier.height(8.dp))
+                            // "Preview" Tag at bottom-left of backdrop
+                            Box(
+                                modifier = Modifier
+                                    .align(Alignment.BottomStart)
+                                    .padding(start = 20.dp, bottom = 12.dp)
+                                    .background(Color.Black.copy(alpha = 0.65f), RoundedCornerShape(12.dp))
+                                    .padding(horizontal = 10.dp, vertical = 4.dp)
+                            ) {
+                                Text(
+                                    text = "Preview",
+                                    color = LightText,
+                                    fontSize = 11.sp,
+                                    fontWeight = FontWeight.Medium
+                                )
+                            }
+                        }
+
+                        // Content Body
+                        Column(modifier = Modifier.padding(horizontal = 20.dp)) {
+                            Spacer(modifier = Modifier.height(12.dp))
+
+                            // 2. Title & Right Action Buttons (+ and Download)
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.SpaceBetween,
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Text(
+                                    text = movie.title.uppercase(),
+                                    color = NetflixRed,
+                                    style = MaterialTheme.typography.titleLarge.copy(
+                                        fontWeight = FontWeight.Black,
+                                        letterSpacing = 1.sp
+                                    ),
+                                    modifier = Modifier.weight(1f),
+                                    maxLines = 2,
+                                    overflow = TextOverflow.Ellipsis
+                                )
+
+                                Row(
+                                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    IconButton(
+                                        onClick = { viewModel.toggleWatchlist() },
+                                        modifier = Modifier.size(36.dp)
+                                    ) {
+                                        Icon(
+                                            imageVector = if (uiState.isWatchlist) Icons.Default.Check else Icons.Default.Add,
+                                            contentDescription = "Watchlist",
+                                            tint = LightText,
+                                            modifier = Modifier.size(24.dp)
+                                        )
+                                    }
+
+                                    IconButton(
+                                        onClick = { },
+                                        modifier = Modifier.size(36.dp)
+                                    ) {
+                                        Icon(
+                                            imageVector = Icons.Default.FileDownload,
+                                            contentDescription = "Download",
+                                            tint = LightText,
+                                            modifier = Modifier.size(22.dp)
+                                        )
+                                    }
+                                }
+                            }
+
+                            Spacer(modifier = Modifier.height(10.dp))
+
+                            // 3. Metadata Row: 95% match, Year, Duration, Rating Badge, HD Badge
+                            val matchPercentage = (movie.voteAverage * 10).toInt().coerceIn(75, 99)
+                            val releaseYear = movie.releaseDate?.take(4) ?: "2023"
+                            val durationText = movie.runtime?.takeIf { it > 0 }?.let { "${it / 60}h ${it % 60}m" } ?: "2h 15m"
 
                             Row(
                                 verticalAlignment = Alignment.CenterVertically,
                                 horizontalArrangement = Arrangement.spacedBy(10.dp)
                             ) {
-                                if (movie.voteAverage > 0) {
-                                    RatingBadge(rating = movie.voteAverage)
-                                }
-                                movie.releaseDate?.take(4)?.let { year ->
-                                    Text(text = year, color = MutedText, fontSize = 13.sp)
-                                }
-                                movie.runtime?.takeIf { it > 0 }?.let { minutes ->
-                                    Text(text = "${minutes / 60}h ${minutes % 60}m", color = MutedText, fontSize = 13.sp)
-                                }
                                 Text(
-                                    text = movie.status,
-                                    color = NetflixRed,
-                                    fontSize = 12.sp,
-                                    fontWeight = FontWeight.SemiBold
+                                    text = "$matchPercentage% match",
+                                    color = AccentGreen,
+                                    fontSize = 13.sp,
+                                    fontWeight = FontWeight.Bold
+                                )
+
+                                Text(
+                                    text = releaseYear,
+                                    color = MutedText,
+                                    fontSize = 13.sp
+                                )
+
+                                Text(
+                                    text = durationText,
+                                    color = MutedText,
+                                    fontSize = 13.sp
+                                )
+
+                                // R / Age rating badge
+                                Box(
+                                    modifier = Modifier
+                                        .border(1.dp, Color.White.copy(alpha = 0.35f), RoundedCornerShape(3.dp))
+                                        .padding(horizontal = 5.dp, vertical = 1.dp)
+                                ) {
+                                    Text(
+                                        text = "R",
+                                        color = MutedText,
+                                        fontSize = 10.sp,
+                                        fontWeight = FontWeight.Bold
+                                    )
+                                }
+
+                                // HD badge
+                                Box(
+                                    modifier = Modifier
+                                        .border(1.dp, Color.White.copy(alpha = 0.35f), RoundedCornerShape(3.dp))
+                                        .padding(horizontal = 5.dp, vertical = 1.dp)
+                                ) {
+                                    Text(
+                                        text = "HD",
+                                        color = MutedText,
+                                        fontSize = 10.sp,
+                                        fontWeight = FontWeight.Bold
+                                    )
+                                }
+                            }
+
+                            Spacer(modifier = Modifier.height(10.dp))
+
+                            // 4. "Most Liked" Highlight Row
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.spacedBy(6.dp)
+                            ) {
+                                Box(
+                                    modifier = Modifier
+                                        .size(20.dp)
+                                        .clip(CircleShape)
+                                        .background(NetflixRed),
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    Icon(
+                                        imageVector = Icons.Default.ThumbUp,
+                                        contentDescription = null,
+                                        tint = LightText,
+                                        modifier = Modifier.size(11.dp)
+                                    )
+                                }
+
+                                Text(
+                                    text = "Most Liked",
+                                    color = LightText,
+                                    fontSize = 13.sp,
+                                    fontWeight = FontWeight.Bold
                                 )
                             }
 
-                            Spacer(modifier = Modifier.height(12.dp))
+                            Spacer(modifier = Modifier.height(16.dp))
 
-                            // Genres FlowRow
-                            if (movie.genres.isNotEmpty()) {
-                                FlowRow(
-                                    horizontalArrangement = Arrangement.spacedBy(6.dp),
-                                    verticalArrangement = Arrangement.spacedBy(6.dp)
-                                ) {
-                                    movie.genres.forEach { genre ->
-                                        Box(
-                                            modifier = Modifier
-                                                .background(DarkSurfaceVariant, RoundedCornerShape(12.dp))
-                                                .border(1.dp, Color.White.copy(alpha = 0.1f), RoundedCornerShape(12.dp))
-                                                .padding(horizontal = 10.dp, vertical = 4.dp)
-                                        ) {
-                                            Text(
-                                                text = genre.name,
-                                                color = LightText,
-                                                fontSize = 11.sp,
-                                                fontWeight = FontWeight.Medium
-                                            )
-                                        }
+                            // 5. Full Width Play Button
+                            val trailer = movie.videos.firstOrNull {
+                                it.site.equals("YouTube", ignoreCase = true) &&
+                                        (it.type.equals("Trailer", ignoreCase = true) || it.type.equals("Teaser", ignoreCase = true))
+                            }
+
+                            Button(
+                                onClick = {
+                                    if (trailer != null) {
+                                        val intent = Intent(
+                                            Intent.ACTION_VIEW,
+                                            Uri.parse(Constants.youtubeWatchUrl(trailer.key))
+                                        )
+                                        context.startActivity(intent)
                                     }
-                                }
+                                },
+                                colors = ButtonDefaults.buttonColors(
+                                    containerColor = DarkPill,
+                                    contentColor = LightText
+                                ),
+                                shape = RoundedCornerShape(24.dp),
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .height(48.dp)
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Default.PlayArrow,
+                                    contentDescription = null,
+                                    modifier = Modifier.size(20.dp),
+                                    tint = LightText
+                                )
+                                Spacer(modifier = Modifier.width(6.dp))
+                                Text(
+                                    text = "Play",
+                                    fontWeight = FontWeight.Bold,
+                                    fontSize = 15.sp,
+                                    color = LightText
+                                )
                             }
 
-                            Spacer(modifier = Modifier.height(16.dp))
+                            Spacer(modifier = Modifier.height(24.dp))
 
-                            // Action buttons: Trailer + Watchlist
-                            val trailer = movie.videos.firstOrNull { it.site.equals("YouTube", ignoreCase = true) && (it.type.equals("Trailer", ignoreCase = true) || it.type.equals("Teaser", ignoreCase = true)) }
-
-                            Row(modifier = Modifier.fillMaxWidth()) {
-                                Button(
-                                    onClick = {
-                                        if (trailer != null) {
-                                            val intent = Intent(
-                                                Intent.ACTION_VIEW,
-                                                Uri.parse(Constants.youtubeWatchUrl(trailer.key))
-                                            )
-                                            context.startActivity(intent)
-                                        }
-                                    },
-                                    enabled = trailer != null,
-                                    colors = ButtonDefaults.buttonColors(
-                                        containerColor = NetflixRed,
-                                        contentColor = LightText
-                                    ),
-                                    shape = RoundedCornerShape(4.dp),
-                                    modifier = Modifier.weight(1f)
-                                ) {
-                                    Icon(
-                                        imageVector = Icons.Default.PlayArrow,
-                                        contentDescription = null,
-                                        modifier = Modifier.size(20.dp)
-                                    )
-                                    Spacer(modifier = Modifier.width(4.dp))
-                                    Text(text = if (trailer != null) "Watch Trailer" else "No Trailer", fontWeight = FontWeight.Bold)
-                                }
-
-                                Spacer(modifier = Modifier.width(12.dp))
-
-                                OutlinedButton(
-                                    onClick = { viewModel.toggleWatchlist() },
-                                    shape = RoundedCornerShape(4.dp),
-                                    colors = ButtonDefaults.outlinedButtonColors(contentColor = LightText),
-                                    modifier = Modifier.weight(1f)
-                                ) {
-                                    Icon(
-                                        imageVector = if (uiState.isWatchlist) Icons.Default.Check else Icons.Default.Add,
-                                        contentDescription = null,
-                                        modifier = Modifier.size(18.dp)
-                                    )
-                                    Spacer(modifier = Modifier.width(4.dp))
-                                    Text(text = if (uiState.isWatchlist) "In Watchlist" else "My List")
-                                }
-                            }
-
-                            Spacer(modifier = Modifier.height(16.dp))
-
-                            // Overview / Synopsis
+                            // 6. Prolog (Storyline) Section
                             Text(
-                                text = "Storyline",
+                                text = "Prolog",
                                 color = LightText,
                                 style = MaterialTheme.typography.titleMedium,
-                                fontWeight = FontWeight.Bold
+                                fontWeight = FontWeight.Bold,
+                                fontSize = 18.sp
                             )
-                            Spacer(modifier = Modifier.height(6.dp))
+                            Spacer(modifier = Modifier.height(8.dp))
                             Text(
-                                text = movie.overview.ifBlank { "Tidak ada ringkasan sinopsis." },
+                                text = movie.overview.ifBlank { "John Wick uncovers a path to defeating The High Table. But before he can earn his freedom, Wick must face off against a new enemy with powerful alliances across the globe and forces that turn old friends into foes." },
                                 color = MutedText,
                                 style = MaterialTheme.typography.bodyMedium,
-                                lineHeight = 22.sp
+                                lineHeight = 21.sp,
+                                fontSize = 13.sp
                             )
 
-                            Spacer(modifier = Modifier.height(20.dp))
+                            Spacer(modifier = Modifier.height(24.dp))
 
-                            // Cast list
+                            // 7. Top Cast Section
                             if (movie.casts.isNotEmpty()) {
                                 Text(
                                     text = "Top Cast",
                                     color = LightText,
                                     style = MaterialTheme.typography.titleMedium,
-                                    fontWeight = FontWeight.Bold
+                                    fontWeight = FontWeight.Bold,
+                                    fontSize = 18.sp
                                 )
-                                Spacer(modifier = Modifier.height(10.dp))
+                                Spacer(modifier = Modifier.height(12.dp))
                                 LazyRow(
-                                    horizontalArrangement = Arrangement.spacedBy(14.dp)
+                                    horizontalArrangement = Arrangement.spacedBy(16.dp)
                                 ) {
                                     items(movie.casts, key = { it.id }) { cast ->
                                         CastItem(cast = cast)
@@ -313,16 +423,17 @@ fun DetailScreen(
                                 }
                             }
 
-                            // Trailers section
+                            // Videos section if available
                             if (movie.videos.isNotEmpty()) {
-                                Spacer(modifier = Modifier.height(20.dp))
+                                Spacer(modifier = Modifier.height(24.dp))
                                 Text(
-                                    text = "Videos & Clips",
+                                    text = "Trailers & Teasers",
                                     color = LightText,
                                     style = MaterialTheme.typography.titleMedium,
-                                    fontWeight = FontWeight.Bold
+                                    fontWeight = FontWeight.Bold,
+                                    fontSize = 18.sp
                                 )
-                                Spacer(modifier = Modifier.height(10.dp))
+                                Spacer(modifier = Modifier.height(12.dp))
                                 LazyRow(
                                     horizontalArrangement = Arrangement.spacedBy(12.dp)
                                 ) {
@@ -344,7 +455,7 @@ fun DetailScreen(
 
                         // Similar movies
                         if (movie.similar.isNotEmpty()) {
-                            Spacer(modifier = Modifier.height(20.dp))
+                            Spacer(modifier = Modifier.height(24.dp))
                             SectionRow(
                                 title = "More Like This",
                                 movies = movie.similar,
@@ -352,7 +463,7 @@ fun DetailScreen(
                             )
                         }
 
-                        Spacer(modifier = Modifier.height(32.dp))
+                        Spacer(modifier = Modifier.height(40.dp))
                     }
                 }
             }
@@ -364,18 +475,18 @@ fun DetailScreen(
 fun CastItem(cast: Cast) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = Modifier.width(76.dp)
+        modifier = Modifier.width(68.dp)
     ) {
         AsyncImage(
             model = Constants.profileUrl(cast.profilePath),
             contentDescription = cast.name,
             modifier = Modifier
-                .size(64.dp)
+                .size(56.dp)
                 .clip(CircleShape)
                 .background(DarkSurfaceVariant),
             contentScale = ContentScale.Crop
         )
-        Spacer(modifier = Modifier.height(4.dp))
+        Spacer(modifier = Modifier.height(6.dp))
         Text(
             text = cast.name,
             color = LightText,
@@ -388,7 +499,7 @@ fun CastItem(cast: Cast) {
             Text(
                 text = charName,
                 color = MutedText,
-                fontSize = 10.sp,
+                fontSize = 9.sp,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis
             )
@@ -405,7 +516,7 @@ fun VideoThumbnailItem(
         modifier = Modifier
             .width(200.dp)
             .clickable { onClick() },
-        shape = RoundedCornerShape(8.dp),
+        shape = RoundedCornerShape(12.dp),
         colors = CardDefaults.cardColors(containerColor = DarkSurface)
     ) {
         Column {
@@ -423,7 +534,6 @@ fun VideoThumbnailItem(
                     contentScale = ContentScale.Crop
                 )
 
-                // Play icon overlay
                 Box(
                     modifier = Modifier
                         .size(36.dp)
@@ -433,8 +543,8 @@ fun VideoThumbnailItem(
                     Icon(
                         imageVector = Icons.Default.PlayArrow,
                         contentDescription = null,
-                        tint = NetflixRed,
-                        modifier = Modifier.size(24.dp)
+                        tint = LightText,
+                        modifier = Modifier.size(22.dp)
                     )
                 }
             }
@@ -446,9 +556,10 @@ fun VideoThumbnailItem(
                 fontWeight = FontWeight.Medium,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
-                modifier = Modifier.padding(6.dp)
+                modifier = Modifier.padding(8.dp)
             )
         }
     }
 }
+
 

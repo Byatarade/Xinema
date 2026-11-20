@@ -51,7 +51,7 @@ fun AppNavHost(
             if (showBottomBar) {
                 NavigationBar(
                     containerColor = DarkSurface,
-                    tonalElevation = 8.dp
+                    tonalElevation = 0.dp
                 ) {
                     bottomNavItems.forEach { screen ->
                         val selected = currentRoute == screen.route
@@ -74,16 +74,10 @@ fun AppNavHost(
                                     )
                                 }
                             },
-                            label = {
-                                screen.title?.let {
-                                    Text(text = it)
-                                }
-                            },
+                            alwaysShowLabel = false,
                             colors = NavigationBarItemDefaults.colors(
-                                selectedIconColor = NetflixRed,
-                                selectedTextColor = NetflixRed,
-                                unselectedIconColor = MutedText,
-                                unselectedTextColor = MutedText,
+                                selectedIconColor = LightText,
+                                unselectedIconColor = MutedText.copy(alpha = 0.6f),
                                 indicatorColor = Color.Transparent
                             )
                         )
@@ -107,11 +101,29 @@ fun AppNavHost(
                     viewModel = homeViewModel,
                     onMovieClick = { movieId ->
                         navController.navigate(Screen.Detail.createRoute(movieId))
+                    },
+                    onSearchClick = {
+                        navController.navigate(Screen.Search.route)
+                    },
+                    onSeeAllClick = {
+                        navController.navigate(Screen.Explore.route)
                     }
                 )
             }
 
-            composable(Screen.Search.route) {
+            composable(Screen.Explore.route) {
+                val exploreViewModel: ExploreViewModel = viewModel(
+                    factory = ExploreViewModel.provideFactory(appContainer.movieRepository)
+                )
+                ExploreScreen(
+                    viewModel = exploreViewModel,
+                    onMovieClick = { movieId ->
+                        navController.navigate(Screen.Detail.createRoute(movieId))
+                    }
+                )
+            }
+
+            composable(Screen.Downloads.route) {
                 val searchViewModel: SearchViewModel = viewModel(
                     factory = SearchViewModel.provideFactory(appContainer.movieRepository)
                 )
@@ -123,12 +135,24 @@ fun AppNavHost(
                 )
             }
 
-            composable(Screen.Explore.route) {
+            composable(Screen.Library.route) {
                 val exploreViewModel: ExploreViewModel = viewModel(
                     factory = ExploreViewModel.provideFactory(appContainer.movieRepository)
                 )
                 ExploreScreen(
                     viewModel = exploreViewModel,
+                    onMovieClick = { movieId ->
+                        navController.navigate(Screen.Detail.createRoute(movieId))
+                    }
+                )
+            }
+
+            composable(Screen.Search.route) {
+                val searchViewModel: SearchViewModel = viewModel(
+                    factory = SearchViewModel.provideFactory(appContainer.movieRepository)
+                )
+                SearchScreen(
+                    viewModel = searchViewModel,
                     onMovieClick = { movieId ->
                         navController.navigate(Screen.Detail.createRoute(movieId))
                     }
