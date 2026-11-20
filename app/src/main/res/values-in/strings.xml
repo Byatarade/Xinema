@@ -1,0 +1,54 @@
+<resources>
+    <string name="app_name">CineStream</string>
+
+    <!-- Navigation -->
+    <string name="nav_home">Beranda</string>
+    <string name="nav_explore">Jelajahi</string>
+    <string name="nav_downloads">Unduhan</string>
+    <string name="nav_library">Koleksi</string>
+    <string name="nav_search">Cari</string>
+    <string name="nav_settings">Pengaturan</string>
+
+    <!-- Home & Sections -->
+    <string name="hero_play">Putar</string>
+    <string name="hero_details">Detail</string>
+    <string name="trending_now">Sedang Tren</string>
+    <string name="series">Serial TV</string>
+    <string name="korean_drama">Drama Korea</string>
+    <string name="popular_movies">Film Populer</string>
+    <string name="now_playing">Sedang Tayang di Bioskop</string>
+    <string name="see_all">Lihat semua</string>
+
+    <!-- Detail Screen -->
+    <string name="preview">Pratinjau</string>
+    <string name="match">%1$d%% cocok</string>
+    <string name="most_liked">Paling Disukai</string>
+    <string name="prolog">Prolog</string>
+    <string name="top_cast">Pemeran Utama</string>
+    <string name="trailers_clips">Trailer &amp; Cuplikan</string>
+    <string name="more_like_this">Film Serupa</string>
+    <string name="in_watchlist">Tersimpan</string>
+    <string name="my_list">Daftar Saya</string>
+    <string name="download">Unduh</string>
+    <string name="no_synopsis">Tidak ada ringkasan sinopsis.</string>
+
+    <!-- Search & Explore -->
+    <string name="search_placeholder">Cari film, serial…</string>
+    <string name="search_hint">Temukan film dan serial favoritmu</string>
+    <string name="no_results">Tidak ada hasil untuk \"%1$s\"</string>
+    <string name="explore_genres">JELAJAHI GENRE</string>
+    <string name="retry">Coba Lagi</string>
+    <string name="load_failed">Gagal memuat data</string>
+    <string name="search_failed">Pencarian gagal</string>
+
+    <!-- Settings & Language -->
+    <string name="settings_title">Pengaturan</string>
+    <string name="language">Bahasa</string>
+    <string name="language_subtitle">Pilih bahasa tampilan aplikasi</string>
+    <string name="english">Bahasa Inggris</string>
+    <string name="indonesian">Bahasa Indonesia</string>
+    <string name="app_info">Informasi Aplikasi</string>
+    <string name="app_version">Versi</string>
+    <string name="about_app">Tentang CineStream</string>
+    <string name="about_description">Aplikasi katalog film dan serial TV dengan TMDB API dan Jetpack Compose.</string>
+</resources>

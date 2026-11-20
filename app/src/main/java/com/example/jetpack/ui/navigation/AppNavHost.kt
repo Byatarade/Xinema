@@ -29,6 +29,7 @@ import com.example.jetpack.ui.screens.home.HomeScreen
 import com.example.jetpack.ui.screens.home.HomeViewModel
 import com.example.jetpack.ui.screens.search.SearchScreen
 import com.example.jetpack.ui.screens.search.SearchViewModel
+import com.example.jetpack.ui.screens.settings.SettingsScreen
 import com.example.jetpack.ui.theme.DarkBackground
 import com.example.jetpack.ui.theme.DarkSurface
 import com.example.jetpack.ui.theme.LightText
@@ -107,6 +108,9 @@ fun AppNavHost(
                     },
                     onSeeAllClick = {
                         navController.navigate(Screen.Explore.route)
+                    },
+                    onProfileClick = {
+                        navController.navigate(Screen.Settings.route)
                     }
                 )
             }
@@ -135,14 +139,18 @@ fun AppNavHost(
                 )
             }
 
-            composable(Screen.Library.route) {
-                val exploreViewModel: ExploreViewModel = viewModel(
-                    factory = ExploreViewModel.provideFactory(appContainer.movieRepository)
+            composable(Screen.Settings.route) {
+                SettingsScreen(
+                    onBackClick = {
+                        navController.popBackStack()
+                    }
                 )
-                ExploreScreen(
-                    viewModel = exploreViewModel,
-                    onMovieClick = { movieId ->
-                        navController.navigate(Screen.Detail.createRoute(movieId))
+            }
+
+            composable(Screen.Library.route) {
+                SettingsScreen(
+                    onBackClick = {
+                        navController.popBackStack()
                     }
                 )
             }

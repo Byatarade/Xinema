@@ -56,6 +56,8 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
+import androidx.compose.ui.res.stringResource
+import com.example.jetpack.R
 import com.example.jetpack.core.common.Constants
 import com.example.jetpack.domain.model.Movie
 import com.example.jetpack.ui.theme.DarkBackground
@@ -75,36 +77,42 @@ fun MoviePosterCard(
     modifier: Modifier = Modifier,
     showTitle: Boolean = false
 ) {
-    Column(
+    Card(
         modifier = modifier
             .width(124.dp)
-            .clickable { onClick() }
+            .clickable { onClick() },
+        shape = RoundedCornerShape(16.dp),
+        colors = CardDefaults.cardColors(containerColor = DarkSurfaceVariant),
+        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .aspectRatio(2f / 3f)
-                .clip(RoundedCornerShape(16.dp))
-                .background(DarkSurfaceVariant)
-        ) {
-            AsyncImage(
-                model = Constants.posterUrl(movie.posterPath) ?: Constants.backdropUrl(movie.backdropPath),
-                contentDescription = movie.title,
-                modifier = Modifier.fillMaxSize(),
-                contentScale = ContentScale.Crop
-            )
-        }
+        Column {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .aspectRatio(2f / 3f)
+                    .clip(RoundedCornerShape(16.dp))
+                    .background(DarkSurfaceVariant)
+            ) {
+                AsyncImage(
+                    model = Constants.posterUrl(movie.posterPath) ?: Constants.backdropUrl(movie.backdropPath),
+                    contentDescription = movie.title,
+                    modifier = Modifier.fillMaxSize(),
+                    contentScale = ContentScale.Crop
+                )
+            }
 
-        if (showTitle) {
-            Spacer(modifier = Modifier.height(6.dp))
-            Text(
-                text = movie.title,
-                color = LightText,
-                style = MaterialTheme.typography.bodySmall,
-                fontWeight = FontWeight.SemiBold,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis
-            )
+            if (showTitle) {
+                Spacer(modifier = Modifier.height(6.dp))
+                Text(
+                    text = movie.title,
+                    color = LightText,
+                    style = MaterialTheme.typography.bodySmall,
+                    fontWeight = FontWeight.SemiBold,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                    modifier = Modifier.padding(horizontal = 6.dp, vertical = 4.dp)
+                )
+            }
         }
     }
 }
@@ -136,7 +144,7 @@ fun SectionRow(
             )
 
             Text(
-                text = "See all",
+                text = stringResource(R.string.see_all),
                 color = MutedText,
                 fontSize = 13.sp,
                 fontWeight = FontWeight.Normal,
@@ -157,6 +165,7 @@ fun SectionRow(
         }
     }
 }
+
 
 @Composable
 fun HeroBanner(
@@ -240,7 +249,7 @@ fun HeroBanner(
                     )
                     Spacer(modifier = Modifier.width(6.dp))
                     Text(
-                        text = "Play",
+                        text = stringResource(R.string.hero_play),
                         fontWeight = FontWeight.SemiBold,
                         fontSize = 14.sp
                     )
@@ -257,7 +266,7 @@ fun HeroBanner(
                     contentPadding = PaddingValues(horizontal = 24.dp, vertical = 10.dp)
                 ) {
                     Text(
-                        text = "Details",
+                        text = stringResource(R.string.hero_details),
                         fontWeight = FontWeight.SemiBold,
                         fontSize = 14.sp
                     )
@@ -335,9 +344,9 @@ fun ErrorView(
         Button(
             onClick = onRetry,
             colors = ButtonDefaults.buttonColors(containerColor = NetflixRed),
-            shape = RoundedCornerShape(4.dp)
+            shape = RoundedCornerShape(24.dp)
         ) {
-            Text(text = "Coba Lagi", color = LightText, fontWeight = FontWeight.Bold)
+            Text(text = stringResource(R.string.retry), color = LightText, fontWeight = FontWeight.Bold)
         }
     }
 }

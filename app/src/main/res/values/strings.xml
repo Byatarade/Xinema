@@ -1,3 +1,54 @@
 <resources>
-    <string name="app_name">jetpack</string>
+    <string name="app_name">CineStream</string>
+
+    <!-- Navigation -->
+    <string name="nav_home">Home</string>
+    <string name="nav_explore">Explore</string>
+    <string name="nav_downloads">Downloads</string>
+    <string name="nav_library">Library</string>
+    <string name="nav_search">Search</string>
+    <string name="nav_settings">Settings</string>
+
+    <!-- Home & Sections -->
+    <string name="hero_play">Play</string>
+    <string name="hero_details">Details</string>
+    <string name="trending_now">Trending Now</string>
+    <string name="series">Series</string>
+    <string name="korean_drama">Korean TV Drama</string>
+    <string name="popular_movies">Popular Movies</string>
+    <string name="now_playing">Now Playing in Theaters</string>
+    <string name="see_all">See all</string>
+
+    <!-- Detail Screen -->
+    <string name="preview">Preview</string>
+    <string name="match">%1$d%% match</string>
+    <string name="most_liked">Most Liked</string>
+    <string name="prolog">Prolog</string>
+    <string name="top_cast">Top Cast</string>
+    <string name="trailers_clips">Trailers &amp; Teasers</string>
+    <string name="more_like_this">More Like This</string>
+    <string name="in_watchlist">In Watchlist</string>
+    <string name="my_list">My List</string>
+    <string name="download">Download</string>
+    <string name="no_synopsis">No synopsis available.</string>
+
+    <!-- Search & Explore -->
+    <string name="search_placeholder">Search movies, series…</string>
+    <string name="search_hint">Find your favorite movies and shows</string>
+    <string name="no_results">No results found for \"%1$s\"</string>
+    <string name="explore_genres">EXPLORE GENRES</string>
+    <string name="retry">Retry</string>
+    <string name="load_failed">Failed to load data</string>
+    <string name="search_failed">Search failed</string>
+
+    <!-- Settings & Language -->
+    <string name="settings_title">Settings</string>
+    <string name="language">Language</string>
+    <string name="language_subtitle">Choose your preferred language</string>
+    <string name="english">English</string>
+    <string name="indonesian">Bahasa Indonesia</string>
+    <string name="app_info">Application Info</string>
+    <string name="app_version">Version</string>
+    <string name="about_app">About CineStream</string>
+    <string name="about_description">Movie &amp; TV Series catalog app powered by TMDB API and Jetpack Compose.</string>
 </resources>

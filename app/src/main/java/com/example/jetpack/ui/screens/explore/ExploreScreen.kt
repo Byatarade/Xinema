@@ -33,6 +33,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.res.stringResource
+import com.example.jetpack.R
 import com.example.jetpack.ui.components.ErrorView
 import com.example.jetpack.ui.components.MoviePosterCard
 import com.example.jetpack.ui.theme.DarkBackground
@@ -55,7 +57,7 @@ fun ExploreScreen(
             TopAppBar(
                 title = {
                     Text(
-                        text = "EXPLORE GENRES",
+                        text = stringResource(R.string.explore_genres),
                         color = LightText,
                         fontWeight = FontWeight.Bold,
                         fontSize = 18.sp
@@ -112,7 +114,7 @@ fun ExploreScreen(
                 }
                 uiState.error != null -> {
                     ErrorView(
-                        message = uiState.error ?: "Gagal memuat film",
+                        message = uiState.error ?: stringResource(R.string.load_failed),
                         onRetry = { viewModel.loadGenreMovies(uiState.selectedGenreId) }
                     )
                 }

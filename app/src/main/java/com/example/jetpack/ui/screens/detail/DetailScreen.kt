@@ -57,6 +57,8 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
+import androidx.compose.ui.res.stringResource
+import com.example.jetpack.R
 import com.example.jetpack.core.common.Constants
 import com.example.jetpack.domain.model.Cast
 import com.example.jetpack.domain.model.Video
@@ -96,7 +98,7 @@ fun DetailScreen(
                 uiState.isLoading -> LoadingView()
                 uiState.error != null -> {
                     ErrorView(
-                        message = uiState.error ?: "Gagal memuat detail film",
+                        message = uiState.error ?: stringResource(R.string.load_failed),
                         onRetry = { viewModel.loadDetail() }
                     )
                 }
@@ -192,7 +194,7 @@ fun DetailScreen(
                                     .padding(horizontal = 10.dp, vertical = 4.dp)
                             ) {
                                 Text(
-                                    text = "Preview",
+                                    text = stringResource(R.string.preview),
                                     color = LightText,
                                     fontSize = 11.sp,
                                     fontWeight = FontWeight.Medium
@@ -232,7 +234,7 @@ fun DetailScreen(
                                     ) {
                                         Icon(
                                             imageVector = if (uiState.isWatchlist) Icons.Default.Check else Icons.Default.Add,
-                                            contentDescription = "Watchlist",
+                                            contentDescription = if (uiState.isWatchlist) stringResource(R.string.in_watchlist) else stringResource(R.string.my_list),
                                             tint = LightText,
                                             modifier = Modifier.size(24.dp)
                                         )
@@ -244,7 +246,7 @@ fun DetailScreen(
                                     ) {
                                         Icon(
                                             imageVector = Icons.Default.FileDownload,
-                                            contentDescription = "Download",
+                                            contentDescription = stringResource(R.string.download),
                                             tint = LightText,
                                             modifier = Modifier.size(22.dp)
                                         )
@@ -264,7 +266,7 @@ fun DetailScreen(
                                 horizontalArrangement = Arrangement.spacedBy(10.dp)
                             ) {
                                 Text(
-                                    text = "$matchPercentage% match",
+                                    text = stringResource(R.string.match, matchPercentage),
                                     color = AccentGreen,
                                     fontSize = 13.sp,
                                     fontWeight = FontWeight.Bold
@@ -334,7 +336,7 @@ fun DetailScreen(
                                 }
 
                                 Text(
-                                    text = "Most Liked",
+                                    text = stringResource(R.string.most_liked),
                                     color = LightText,
                                     fontSize = 13.sp,
                                     fontWeight = FontWeight.Bold
@@ -376,7 +378,7 @@ fun DetailScreen(
                                 )
                                 Spacer(modifier = Modifier.width(6.dp))
                                 Text(
-                                    text = "Play",
+                                    text = stringResource(R.string.hero_play),
                                     fontWeight = FontWeight.Bold,
                                     fontSize = 15.sp,
                                     color = LightText
@@ -387,7 +389,7 @@ fun DetailScreen(
 
                             // 6. Prolog (Storyline) Section
                             Text(
-                                text = "Prolog",
+                                text = stringResource(R.string.prolog),
                                 color = LightText,
                                 style = MaterialTheme.typography.titleMedium,
                                 fontWeight = FontWeight.Bold,
@@ -395,7 +397,7 @@ fun DetailScreen(
                             )
                             Spacer(modifier = Modifier.height(8.dp))
                             Text(
-                                text = movie.overview.ifBlank { "John Wick uncovers a path to defeating The High Table. But before he can earn his freedom, Wick must face off against a new enemy with powerful alliances across the globe and forces that turn old friends into foes." },
+                                text = movie.overview.ifBlank { stringResource(R.string.no_synopsis) },
                                 color = MutedText,
                                 style = MaterialTheme.typography.bodyMedium,
                                 lineHeight = 21.sp,
@@ -407,7 +409,7 @@ fun DetailScreen(
                             // 7. Top Cast Section
                             if (movie.casts.isNotEmpty()) {
                                 Text(
-                                    text = "Top Cast",
+                                    text = stringResource(R.string.top_cast),
                                     color = LightText,
                                     style = MaterialTheme.typography.titleMedium,
                                     fontWeight = FontWeight.Bold,
@@ -427,7 +429,7 @@ fun DetailScreen(
                             if (movie.videos.isNotEmpty()) {
                                 Spacer(modifier = Modifier.height(24.dp))
                                 Text(
-                                    text = "Trailers & Teasers",
+                                    text = stringResource(R.string.trailers_clips),
                                     color = LightText,
                                     style = MaterialTheme.typography.titleMedium,
                                     fontWeight = FontWeight.Bold,
@@ -457,7 +459,7 @@ fun DetailScreen(
                         if (movie.similar.isNotEmpty()) {
                             Spacer(modifier = Modifier.height(24.dp))
                             SectionRow(
-                                title = "More Like This",
+                                title = stringResource(R.string.more_like_this),
                                 movies = movie.similar,
                                 onMovieClick = onMovieClick
                             )

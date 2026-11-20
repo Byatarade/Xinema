@@ -20,7 +20,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -29,7 +28,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import com.example.jetpack.R
 import com.example.jetpack.domain.model.Movie
 import com.example.jetpack.ui.components.ErrorView
 import com.example.jetpack.ui.components.HeroBanner
@@ -45,6 +46,7 @@ fun HomeScreen(
     onMovieClick: (Int) -> Unit,
     onSearchClick: () -> Unit = {},
     onSeeAllClick: () -> Unit = {},
+    onProfileClick: () -> Unit = {},
     modifier: Modifier = Modifier
 ) {
     val uiState by viewModel.uiState.collectAsState()
@@ -65,7 +67,7 @@ fun HomeScreen(
                 }
                 uiState.error != null && uiState.trending.isEmpty() -> {
                     ErrorView(
-                        message = uiState.error ?: "Gagal memuat data",
+                        message = uiState.error ?: stringResource(R.string.load_failed),
                         onRetry = { viewModel.loadHomeData() }
                     )
                 }
@@ -102,7 +104,7 @@ fun HomeScreen(
                         Spacer(modifier = Modifier.height(16.dp))
 
                         SectionRow(
-                            title = "Trending Now",
+                            title = stringResource(R.string.trending_now),
                             movies = uiState.trending,
                             onMovieClick = onMovieClick,
                             onSeeAllClick = onSeeAllClick
@@ -111,7 +113,7 @@ fun HomeScreen(
                         if (tvAsMovies.isNotEmpty()) {
                             Spacer(modifier = Modifier.height(20.dp))
                             SectionRow(
-                                title = "Series",
+                                title = stringResource(R.string.series),
                                 movies = tvAsMovies,
                                 onMovieClick = onMovieClick,
                                 onSeeAllClick = onSeeAllClick
@@ -121,7 +123,7 @@ fun HomeScreen(
                         if (uiState.topRated.isNotEmpty()) {
                             Spacer(modifier = Modifier.height(20.dp))
                             SectionRow(
-                                title = "Korean TV Drama",
+                                title = stringResource(R.string.korean_drama),
                                 movies = uiState.topRated,
                                 onMovieClick = onMovieClick,
                                 onSeeAllClick = onSeeAllClick
@@ -131,7 +133,7 @@ fun HomeScreen(
                         if (uiState.popular.isNotEmpty()) {
                             Spacer(modifier = Modifier.height(20.dp))
                             SectionRow(
-                                title = "Popular Movies",
+                                title = stringResource(R.string.popular_movies),
                                 movies = uiState.popular,
                                 onMovieClick = onMovieClick,
                                 onSeeAllClick = onSeeAllClick
@@ -141,7 +143,7 @@ fun HomeScreen(
                         if (uiState.nowPlaying.isNotEmpty()) {
                             Spacer(modifier = Modifier.height(20.dp))
                             SectionRow(
-                                title = "Now Playing in Theaters",
+                                title = stringResource(R.string.now_playing),
                                 movies = uiState.nowPlaying,
                                 onMovieClick = onMovieClick,
                                 onSeeAllClick = onSeeAllClick
@@ -160,12 +162,13 @@ fun HomeScreen(
                         horizontalArrangement = Arrangement.SpaceBetween,
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        // User Avatar
+                        // User Avatar (Opens Settings)
                         Box(
                             modifier = Modifier
                                 .size(40.dp)
                                 .clip(CircleShape)
-                                .background(DarkSurfaceVariant.copy(alpha = 0.85f)),
+                                .background(DarkSurfaceVariant.copy(alpha = 0.85f))
+                                .clickable { onProfileClick() },
                             contentAlignment = Alignment.Center
                         ) {
                             Icon(
@@ -198,5 +201,6 @@ fun HomeScreen(
         }
     }
 }
+
 
 

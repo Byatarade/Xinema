@@ -37,6 +37,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.res.stringResource
+import com.example.jetpack.R
 import com.example.jetpack.ui.components.ErrorView
 import com.example.jetpack.ui.components.MoviePosterCard
 import com.example.jetpack.ui.theme.DarkBackground
@@ -71,7 +73,7 @@ fun SearchScreen(
                 value = uiState.query,
                 onValueChange = { viewModel.onQueryChanged(it) },
                 placeholder = {
-                    Text(text = "Search movies, series...", color = MutedText)
+                    Text(text = stringResource(R.string.search_placeholder), color = MutedText)
                 },
                 leadingIcon = {
                     Icon(
@@ -114,7 +116,7 @@ fun SearchScreen(
                 }
                 uiState.error != null -> {
                     ErrorView(
-                        message = uiState.error ?: "Gagal melakukan pencarian",
+                        message = uiState.error ?: stringResource(R.string.search_failed),
                         onRetry = { viewModel.onQueryChanged(uiState.query) }
                     )
                 }
@@ -129,7 +131,7 @@ fun SearchScreen(
                             )
                             Spacer(modifier = Modifier.height(12.dp))
                             Text(
-                                text = "Find your favorite movies and shows",
+                                text = stringResource(R.string.search_hint),
                                 color = MutedText,
                                 style = MaterialTheme.typography.bodyMedium
                             )
@@ -139,7 +141,7 @@ fun SearchScreen(
                 uiState.results.isEmpty() -> {
                     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                         Text(
-                            text = "Tidak ada hasil untuk \"${uiState.query}\"",
+                            text = stringResource(R.string.no_results, uiState.query),
                             color = MutedText,
                             style = MaterialTheme.typography.bodyMedium,
                             textAlign = TextAlign.Center
