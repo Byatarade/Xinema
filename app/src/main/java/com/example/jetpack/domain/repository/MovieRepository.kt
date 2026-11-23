@@ -12,7 +12,7 @@ interface MovieRepository {
     fun getPopularMovies(): Flow<Resource<List<Movie>>>
     fun getTopRatedMovies(): Flow<Resource<List<Movie>>>
     fun getPopularTvShows(): Flow<Resource<List<TvShow>>>
-    fun getMovieDetail(movieId: Int): Flow<Resource<MovieDetail>>
+    fun getMovieDetail(movieId: Int, mediaType: String = "movie"): Flow<Resource<MovieDetail>>
     fun search(query: String): Flow<Resource<List<Movie>>>
     fun discoverByGenre(genreId: Int): Flow<Resource<List<Movie>>>
 }

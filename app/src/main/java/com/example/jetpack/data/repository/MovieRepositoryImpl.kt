@@ -70,48 +70,85 @@ class MovieRepositoryImpl(
         }
     }
 
-    override fun getMovieDetail(movieId: Int): Flow<Resource<MovieDetail>> = flow {
+    override fun getMovieDetail(movieId: Int, mediaType: String): Flow<Resource<MovieDetail>> = flow {
         emit(Resource.Loading)
         try {
             coroutineScope {
-                val detailDeferred = async { api.getMovieDetail(movieId) }
-                val creditsDeferred = async { runCatching { api.getMovieCredits(movieId) }.getOrNull() }
-                val videosDeferred = async { runCatching { api.getMovieVideos(movieId) }.getOrNull() }
-                val similarDeferred = async { runCatching { api.getSimilarMovies(movieId) }.getOrNull() }
+                if (mediaType == "tv") {
+                    val detailDeferred = async { api.getTvDetail(movieId) }
+                    val creditsDeferred = async { runCatching { api.getTvCredits(movieId) }.getOrNull() }
+                    val videosDeferred = async { runCatching { api.getTvVideos(movieId) }.getOrNull() }
+                    val similarDeferred = async { runCatching { api.getSimilarTvShows(movieId) }.getOrNull() }
 
-                val detailDto = detailDeferred.await()
-                val creditsDto = creditsDeferred.await()
-                val videosDto = videosDeferred.await()
-                val similarDto = similarDeferred.await()
+                    val detailDto = detailDeferred.await()
+                    val creditsDto = creditsDeferred.await()
+                    val videosDto = videosDeferred.await()
+                    val similarDto = similarDeferred.await()
 
-                val casts = creditsDto?.cast?.take(15)?.map { it.toDomain() } ?: emptyList()
-                val videos = videosDto?.results?.map { it.toDomain() } ?: emptyList()
-                val similar = similarDto?.results?.map { it.toDomain() } ?: emptyList()
+                    val casts = creditsDto?.cast?.take(15)?.map { it.toDomain() } ?: emptyList()
+                    val videos = videosDto?.results?.map { it.toDomain() } ?: emptyList()
+                    val similar = similarDto?.results?.map { it.toMovie() } ?: emptyList()
 
-                val movieDetail = detailDto.toDomain(
-                    casts = casts,
-                    videos = videos,
-                    similar = similar
-                )
-                emit(Resource.Success(movieDetail))
+                    val movieDetail = detailDto.toDomain(
+                        casts = casts,
+                        videos = videos,
+                        similar = similar
+                    )
+                    emit(Resource.Success(movieDetail))
+                } else {
+                    val detailDeferred = async { api.getMovieDetail(movieId) }
+                    val creditsDeferred = async { runCatching { api.getMovieCredits(movieId) }.getOrNull() }
+                    val videosDeferred = async { runCatching { api.getMovieVideos(movieId) }.getOrNull() }
+                    val similarDeferred = async { runCatching { api.getSimilarMovies(movieId) }.getOrNull() }
+
+                    val detailDto = detailDeferred.await()
+                    val creditsDto = creditsDeferred.await()
+                    val videosDto = videosDeferred.await()
+                    val similarDto = similarDeferred.await()
+
+                    val casts = creditsDto?.cast?.take(15)?.map { it.toDomain() } ?: emptyList()
+                    val videos = videosDto?.results?.map { it.toDomain() } ?: emptyList()
+                    val similar = similarDto?.results?.map { it.toDomain() } ?: emptyList()
+
+                    val movieDetail = detailDto.toDomain(
+                        casts = casts,
+                        videos = videos,
+                        similar = similar
+                    )
+                    emit(Resource.Success(movieDetail))
+                }
             }
         } catch (e: Exception) {
-            emit(Resource.Error(e.localizedMessage ?: "Failed to load movie details", e))
+            val userFriendlyMessage = if (e.message?.contains("404") == true) {
+                "Konten tidak ditemukan atau belum tersedia"
+            } else {
+                e.localizedMessage ?: "Failed to load movie details"
+            }
+            emit(Resource.Error(userFriendlyMessage, e))
         }
     }
 
     override fun search(query: String): Flow<Resource<List<Movie>>> = flow {
-        if (query.isBlank()) {
+        val trimmed = query.trim()
+        if (trimmed.isBlank()) {
             emit(Resource.Success(emptyList()))
             return@flow
         }
         emit(Resource.Loading)
         try {
-            val response = api.searchMulti(query = query)
-            val results = response.results.map { it.toDomain() }
+            val response = api.searchMulti(query = trimmed)
+            // Filter out people (actors/directors) and entries without posters to prevent 404s
+            val results = response.results
+                .filter { it.mediaType != "person" && (it.posterPath != null || it.backdropPath != null) }
+                .map { it.toDomain() }
             emit(Resource.Success(results))
         } catch (e: Exception) {
-            emit(Resource.Error(e.localizedMessage ?: "Search failed", e))
+            val userFriendlyMessage = if (e.message?.contains("404") == true) {
+                "Hasil tidak ditemukan"
+            } else {
+                e.localizedMessage ?: "Search failed"
+            }
+            emit(Resource.Error(userFriendlyMessage, e))
         }
     }
 

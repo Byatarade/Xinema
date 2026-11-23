@@ -3,6 +3,7 @@ package com.example.jetpack.data.remote
 import com.example.jetpack.data.model.CreditsDto
 import com.example.jetpack.data.model.MovieDetailDto
 import com.example.jetpack.data.model.MovieResponseDto
+import com.example.jetpack.data.model.TvDetailDto
 import com.example.jetpack.data.model.TvResponseDto
 import com.example.jetpack.data.model.VideosDto
 import retrofit2.http.GET
@@ -56,6 +57,27 @@ interface TmdbApiService {
         @Path("movie_id") movieId: Int,
         @Query("page") page: Int = 1
     ): MovieResponseDto
+
+    @GET("tv/{tv_id}")
+    suspend fun getTvDetail(
+        @Path("tv_id") tvId: Int
+    ): TvDetailDto
+
+    @GET("tv/{tv_id}/credits")
+    suspend fun getTvCredits(
+        @Path("tv_id") tvId: Int
+    ): CreditsDto
+
+    @GET("tv/{tv_id}/videos")
+    suspend fun getTvVideos(
+        @Path("tv_id") tvId: Int
+    ): VideosDto
+
+    @GET("tv/{tv_id}/similar")
+    suspend fun getSimilarTvShows(
+        @Path("tv_id") tvId: Int,
+        @Query("page") page: Int = 1
+    ): TvResponseDto
 
     @GET("search/multi")
     suspend fun searchMulti(

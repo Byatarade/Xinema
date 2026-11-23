@@ -45,7 +45,7 @@ import com.example.jetpack.ui.theme.NetflixRed
 @Composable
 fun ExploreScreen(
     viewModel: ExploreViewModel,
-    onMovieClick: (Int) -> Unit,
+    onMovieClick: (Int, String) -> Unit,
     modifier: Modifier = Modifier
 ) {
     val uiState by viewModel.uiState.collectAsState()
@@ -128,7 +128,7 @@ fun ExploreScreen(
                         items(uiState.movies, key = { it.id }) { movie ->
                             MoviePosterCard(
                                 movie = movie,
-                                onClick = { onMovieClick(movie.id) },
+                                onClick = { onMovieClick(movie.id, "movie") },
                                 cardWidth = null,
                                 modifier = Modifier.fillMaxWidth()
                             )

@@ -40,7 +40,7 @@ import com.example.jetpack.ui.components.SectionRow
 @Composable
 fun HomeScreen(
     viewModel: HomeViewModel,
-    onMovieClick: (Int) -> Unit,
+    onMovieClick: (Int, String) -> Unit,
     onSearchClick: () -> Unit = {},
     onSeeAllClick: () -> Unit = {},
     onProfileClick: () -> Unit = {},
@@ -94,8 +94,8 @@ fun HomeScreen(
                     ) {
                         HeroBanner(
                             movie = uiState.heroMovie,
-                            onMovieClick = onMovieClick,
-                            onPlayClick = onMovieClick
+                            onMovieClick = { id -> onMovieClick(id, "movie") },
+                            onPlayClick = { id -> onMovieClick(id, "movie") }
                         )
 
                         Spacer(modifier = Modifier.height(16.dp))
@@ -103,7 +103,7 @@ fun HomeScreen(
                         SectionRow(
                             title = stringResource(R.string.trending_now),
                             movies = uiState.trending,
-                            onMovieClick = onMovieClick,
+                            onMovieClick = { id -> onMovieClick(id, "movie") },
                             onSeeAllClick = onSeeAllClick
                         )
 
@@ -112,7 +112,7 @@ fun HomeScreen(
                             SectionRow(
                                 title = stringResource(R.string.series),
                                 movies = tvAsMovies,
-                                onMovieClick = onMovieClick,
+                                onMovieClick = { id -> onMovieClick(id, "tv") },
                                 onSeeAllClick = onSeeAllClick
                             )
                         }
@@ -122,7 +122,7 @@ fun HomeScreen(
                             SectionRow(
                                 title = stringResource(R.string.korean_drama),
                                 movies = uiState.topRated,
-                                onMovieClick = onMovieClick,
+                                onMovieClick = { id -> onMovieClick(id, "movie") },
                                 onSeeAllClick = onSeeAllClick
                             )
                         }
@@ -132,7 +132,7 @@ fun HomeScreen(
                             SectionRow(
                                 title = stringResource(R.string.popular_movies),
                                 movies = uiState.popular,
-                                onMovieClick = onMovieClick,
+                                onMovieClick = { id -> onMovieClick(id, "movie") },
                                 onSeeAllClick = onSeeAllClick
                             )
                         }
@@ -142,7 +142,7 @@ fun HomeScreen(
                             SectionRow(
                                 title = stringResource(R.string.now_playing),
                                 movies = uiState.nowPlaying,
-                                onMovieClick = onMovieClick,
+                                onMovieClick = { id -> onMovieClick(id, "movie") },
                                 onSeeAllClick = onSeeAllClick
                             )
                         }

@@ -21,6 +21,7 @@ data class DetailUiState(
 
 class DetailViewModel(
     private val movieId: Int,
+    private val mediaType: String = "movie",
     private val repository: MovieRepository
 ) : ViewModel() {
 
@@ -34,7 +35,7 @@ class DetailViewModel(
     fun loadDetail() {
         _uiState.update { it.copy(isLoading = true, error = null) }
         viewModelScope.launch {
-            repository.getMovieDetail(movieId).collect { res ->
+            repository.getMovieDetail(movieId, mediaType).collect { res ->
                 when (res) {
                     is Resource.Success -> {
                         _uiState.update { it.copy(movie = res.data, isLoading = false) }
@@ -55,11 +56,11 @@ class DetailViewModel(
     }
 
     companion object {
-        fun provideFactory(movieId: Int, repository: MovieRepository): ViewModelProvider.Factory =
+        fun provideFactory(movieId: Int, mediaType: String = "movie", repository: MovieRepository): ViewModelProvider.Factory =
             object : ViewModelProvider.Factory {
                 @Suppress("UNCHECKED_CAST")
                 override fun <T : ViewModel> create(modelClass: Class<T>): T {
-                    return DetailViewModel(movieId, repository) as T
+                    return DetailViewModel(movieId, mediaType, repository) as T
                 }
             }
     }

@@ -78,7 +78,7 @@ import com.example.jetpack.ui.theme.NetflixRed
 fun DetailScreen(
     viewModel: DetailViewModel,
     onBackClick: () -> Unit,
-    onMovieClick: (Int) -> Unit,
+    onMovieClick: (Int, String) -> Unit,
     modifier: Modifier = Modifier
 ) {
     val uiState by viewModel.uiState.collectAsState()
@@ -422,7 +422,7 @@ private fun DetailInfoSection(
     uiState: DetailUiState,
     viewModel: DetailViewModel,
     context: Context,
-    onMovieClick: (Int) -> Unit,
+    onMovieClick: (Int, String) -> Unit,
     showPlayButton: Boolean,
     showActionButtons: Boolean
 ) {
@@ -623,7 +623,10 @@ private fun DetailInfoSection(
         SectionRow(
             title = stringResource(R.string.more_like_this),
             movies = movie.similar,
-            onMovieClick = onMovieClick
+            onMovieClick = { id ->
+                val clicked = movie.similar.find { it.id == id }
+                onMovieClick(id, clicked?.mediaType ?: "movie")
+            }
         )
     }
 

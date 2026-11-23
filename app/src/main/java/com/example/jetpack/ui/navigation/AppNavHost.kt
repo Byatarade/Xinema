@@ -160,8 +160,8 @@ fun AppNavHost(
                 )
                 HomeScreen(
                     viewModel = homeViewModel,
-                    onMovieClick = { movieId ->
-                        navController.navigate(Screen.Detail.createRoute(movieId))
+                    onMovieClick = { movieId, mediaType ->
+                        navController.navigate(Screen.Detail.createRoute(movieId, mediaType))
                     },
                     onSearchClick = {
                         navController.navigate(Screen.Search.route)
@@ -181,8 +181,8 @@ fun AppNavHost(
                 )
                 ExploreScreen(
                     viewModel = exploreViewModel,
-                    onMovieClick = { movieId ->
-                        navController.navigate(Screen.Detail.createRoute(movieId))
+                    onMovieClick = { movieId, mediaType ->
+                        navController.navigate(Screen.Detail.createRoute(movieId, mediaType))
                     }
                 )
             }
@@ -193,8 +193,8 @@ fun AppNavHost(
                 )
                 SearchScreen(
                     viewModel = searchViewModel,
-                    onMovieClick = { movieId ->
-                        navController.navigate(Screen.Detail.createRoute(movieId))
+                    onMovieClick = { movieId, mediaType ->
+                        navController.navigate(Screen.Detail.createRoute(movieId, mediaType))
                     }
                 )
             }
@@ -225,8 +225,8 @@ fun AppNavHost(
                 )
                 SearchScreen(
                     viewModel = searchViewModel,
-                    onMovieClick = { movieId ->
-                        navController.navigate(Screen.Detail.createRoute(movieId))
+                    onMovieClick = { movieId, mediaType ->
+                        navController.navigate(Screen.Detail.createRoute(movieId, mediaType))
                     }
                 )
             }
@@ -234,19 +234,24 @@ fun AppNavHost(
             composable(
                 route = Screen.Detail.route,
                 arguments = listOf(
-                    navArgument("movieId") { type = NavType.IntType }
+                    navArgument("movieId") { type = NavType.IntType },
+                    navArgument("mediaType") {
+                        type = NavType.StringType
+                        defaultValue = "movie"
+                    }
                 )
             ) { backStackEntry ->
                 val movieId = backStackEntry.arguments?.getInt("movieId") ?: 0
+                val mediaType = backStackEntry.arguments?.getString("mediaType") ?: "movie"
                 val detailViewModel: DetailViewModel = viewModel(
-                    key = "detail_$movieId",
-                    factory = DetailViewModel.provideFactory(movieId, appContainer.movieRepository)
+                    key = "detail_${mediaType}_$movieId",
+                    factory = DetailViewModel.provideFactory(movieId, mediaType, appContainer.movieRepository)
                 )
                 DetailScreen(
                     viewModel = detailViewModel,
                     onBackClick = { navController.popBackStack() },
-                    onMovieClick = { nextMovieId ->
-                        navController.navigate(Screen.Detail.createRoute(nextMovieId))
+                    onMovieClick = { nextMovieId, nextMediaType ->
+                        navController.navigate(Screen.Detail.createRoute(nextMovieId, nextMediaType))
                     }
                 )
             }

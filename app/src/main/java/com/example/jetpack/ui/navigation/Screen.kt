@@ -17,8 +17,8 @@ sealed class Screen(val route: String, val title: String? = null, val icon: Imag
     data object Settings : Screen("settings", "Settings", Icons.Default.Settings)
     data object Search : Screen("search", "Search", Icons.Default.Search)
 
-    data object Detail : Screen("detail/{movieId}") {
-        fun createRoute(movieId: Int): String = "detail/$movieId"
+    data object Detail : Screen("detail/{movieId}?mediaType={mediaType}") {
+        fun createRoute(movieId: Int, mediaType: String = "movie"): String = "detail/$movieId?mediaType=$mediaType"
     }
 }
 

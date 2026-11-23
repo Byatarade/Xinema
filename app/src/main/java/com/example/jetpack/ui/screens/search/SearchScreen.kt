@@ -43,7 +43,7 @@ import com.example.jetpack.ui.theme.NetflixRed
 @Composable
 fun SearchScreen(
     viewModel: SearchViewModel,
-    onMovieClick: (Int) -> Unit,
+    onMovieClick: (Int, String) -> Unit,
     modifier: Modifier = Modifier
 ) {
     val uiState by viewModel.uiState.collectAsState()
@@ -152,7 +152,7 @@ fun SearchScreen(
                         items(uiState.results, key = { it.id }) { movie ->
                             MoviePosterCard(
                                 movie = movie,
-                                onClick = { onMovieClick(movie.id) },
+                                onClick = { onMovieClick(movie.id, movie.mediaType) },
                                 cardWidth = null,
                                 modifier = Modifier.fillMaxWidth(),
                                 showTitle = true

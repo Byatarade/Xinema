@@ -77,6 +77,21 @@ data class TvShowDto(
             genreIds = genreIds ?: emptyList()
         )
     }
+
+    fun toMovie(): Movie {
+        return Movie(
+            id = id,
+            title = name ?: "Untitled Series",
+            overview = MovieSynopsisFallback.getIndonesianOverview(id, overview ?: ""),
+            posterPath = posterPath,
+            backdropPath = backdropPath,
+            releaseDate = firstAirDate,
+            voteAverage = voteAverage ?: 0.0,
+            voteCount = voteCount ?: 0,
+            genreIds = genreIds ?: emptyList(),
+            mediaType = "tv"
+        )
+    }
 }
 
 data class MovieDetailDto(
@@ -103,6 +118,41 @@ data class MovieDetailDto(
             backdropPath = backdropPath,
             releaseDate = releaseDate,
             runtime = runtime,
+            voteAverage = voteAverage ?: 0.0,
+            voteCount = voteCount ?: 0,
+            genres = genres?.map { it.toDomain() } ?: emptyList(),
+            status = status ?: "Unknown",
+            casts = casts,
+            videos = videos,
+            similar = similar
+        )
+    }
+}
+
+data class TvDetailDto(
+    @SerializedName("id") val id: Int,
+    @SerializedName("name") val name: String?,
+    @SerializedName("tagline") val tagline: String?,
+    @SerializedName("overview") val overview: String?,
+    @SerializedName("poster_path") val posterPath: String?,
+    @SerializedName("backdrop_path") val backdropPath: String?,
+    @SerializedName("first_air_date") val firstAirDate: String?,
+    @SerializedName("episode_run_time") val episodeRunTime: List<Int>?,
+    @SerializedName("vote_average") val voteAverage: Double?,
+    @SerializedName("vote_count") val voteCount: Int?,
+    @SerializedName("genres") val genres: List<GenreDto>?,
+    @SerializedName("status") val status: String?
+) {
+    fun toDomain(casts: List<Cast> = emptyList(), videos: List<Video> = emptyList(), similar: List<Movie> = emptyList()): MovieDetail {
+        return MovieDetail(
+            id = id,
+            title = name ?: "Untitled Series",
+            tagline = tagline,
+            overview = MovieSynopsisFallback.getIndonesianOverview(id, overview ?: ""),
+            posterPath = posterPath,
+            backdropPath = backdropPath,
+            releaseDate = firstAirDate,
+            runtime = episodeRunTime?.firstOrNull() ?: 45,
             voteAverage = voteAverage ?: 0.0,
             voteCount = voteCount ?: 0,
             genres = genres?.map { it.toDomain() } ?: emptyList(),
