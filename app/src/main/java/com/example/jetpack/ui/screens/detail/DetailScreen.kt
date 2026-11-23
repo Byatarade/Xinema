@@ -1,6 +1,8 @@
 package com.example.jetpack.ui.screens.detail
 
+import android.content.Context
 import android.content.Intent
+import android.content.res.Configuration
 import android.net.Uri
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
@@ -13,6 +15,7 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -52,6 +55,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -62,6 +66,7 @@ import coil.compose.AsyncImage
 import com.example.jetpack.R
 import com.example.jetpack.core.common.Constants
 import com.example.jetpack.domain.model.Cast
+import com.example.jetpack.domain.model.MovieDetail
 import com.example.jetpack.domain.model.Video
 import com.example.jetpack.ui.components.ErrorView
 import com.example.jetpack.ui.components.LoadingView
@@ -79,6 +84,8 @@ fun DetailScreen(
     val uiState by viewModel.uiState.collectAsState()
     val context = LocalContext.current
     val bgColor = MaterialTheme.colorScheme.background
+    val configuration = LocalConfiguration.current
+    val isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
 
     Scaffold(
         containerColor = bgColor,
@@ -100,373 +107,527 @@ fun DetailScreen(
                 }
                 uiState.movie != null -> {
                     val movie = uiState.movie!!
-                    val scrollState = rememberScrollState()
 
-                    Column(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .verticalScroll(scrollState)
-                    ) {
-                        // 1. Backdrop Image with Top Action Buttons and "Preview" Badge
-                        Box(
+                    if (isLandscape) {
+                        // Landscape Layout: 2-column widescreen design
+                        Row(
                             modifier = Modifier
-                                .fillMaxWidth()
-                                .height(280.dp)
+                                .fillMaxSize()
+                                .padding(horizontal = 16.dp, vertical = 8.dp)
                         ) {
-                            AsyncImage(
-                                model = Constants.backdropUrl(movie.backdropPath)
-                                    ?: Constants.posterUrl(movie.posterPath),
-                                contentDescription = movie.title,
-                                modifier = Modifier.fillMaxSize(),
-                                contentScale = ContentScale.Crop
-                            )
-
-                            // Bottom gradient blending smoothly to theme background
-                            Box(
+                            // Left Pane: Media Preview, Action Buttons & Play Trailer
+                            Column(
                                 modifier = Modifier
-                                    .fillMaxSize()
-                                    .background(
-                                        Brush.verticalGradient(
-                                            colorStops = arrayOf(
-                                                0.0f to Color.Black.copy(alpha = 0.5f),
-                                                0.4f to Color.Transparent,
-                                                0.8f to bgColor.copy(alpha = 0.8f),
-                                                1.0f to bgColor
-                                            )
-                                        )
-                                    )
-                            )
-
-                            // Top Back and More buttons
-                            Row(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .statusBarsPadding()
-                                    .padding(horizontal = 16.dp, vertical = 8.dp),
-                                horizontalArrangement = Arrangement.SpaceBetween,
-                                verticalAlignment = Alignment.CenterVertically
+                                    .width(320.dp)
+                                    .fillMaxHeight()
+                                    .verticalScroll(rememberScrollState())
+                                    .padding(end = 12.dp)
                             ) {
-                                // Back button
-                                Box(
-                                    modifier = Modifier
-                                        .size(38.dp)
-                                        .clip(CircleShape)
-                                        .background(MaterialTheme.colorScheme.surface.copy(alpha = 0.8f))
-                                        .clickable { onBackClick() },
-                                    contentAlignment = Alignment.Center
-                                ) {
-                                    Icon(
-                                        imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                                        contentDescription = "Back",
-                                        tint = MaterialTheme.colorScheme.onSurface,
-                                        modifier = Modifier.size(20.dp)
-                                    )
-                                }
-
-                                // More Options button
-                                Box(
-                                    modifier = Modifier
-                                        .size(38.dp)
-                                        .clip(CircleShape)
-                                        .background(MaterialTheme.colorScheme.surface.copy(alpha = 0.8f))
-                                        .clickable { },
-                                    contentAlignment = Alignment.Center
-                                ) {
-                                    Icon(
-                                        imageVector = Icons.Default.MoreHoriz,
-                                        contentDescription = "More",
-                                        tint = MaterialTheme.colorScheme.onSurface,
-                                        modifier = Modifier.size(22.dp)
-                                    )
-                                }
-                            }
-
-                            // "Preview" Tag at bottom-left of backdrop
-                            Box(
-                                modifier = Modifier
-                                    .align(Alignment.BottomStart)
-                                    .padding(start = 20.dp, bottom = 12.dp)
-                                    .background(Color.Black.copy(alpha = 0.65f), RoundedCornerShape(12.dp))
-                                    .padding(horizontal = 10.dp, vertical = 4.dp)
-                            ) {
-                                Text(
-                                    text = stringResource(R.string.preview),
-                                    color = Color.White,
-                                    fontSize = 11.sp,
-                                    fontWeight = FontWeight.Medium
-                                )
-                            }
-                        }
-
-                        // Content Body
-                        Column(modifier = Modifier.padding(horizontal = 20.dp)) {
-                            Spacer(modifier = Modifier.height(12.dp))
-
-                            // 2. Title & Right Action Buttons (+ and Download)
-                            Row(
-                                modifier = Modifier.fillMaxWidth(),
-                                horizontalArrangement = Arrangement.SpaceBetween,
-                                verticalAlignment = Alignment.CenterVertically
-                            ) {
-                                Text(
-                                    text = movie.title.uppercase(),
-                                    color = NetflixRed,
-                                    style = MaterialTheme.typography.titleLarge.copy(
-                                        fontWeight = FontWeight.Black,
-                                        letterSpacing = 1.sp
-                                    ),
-                                    modifier = Modifier.weight(1f),
-                                    maxLines = 2,
-                                    overflow = TextOverflow.Ellipsis
-                                )
-
+                                // Back Button & Preview Tag Row
                                 Row(
-                                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(bottom = 8.dp),
+                                    horizontalArrangement = Arrangement.SpaceBetween,
                                     verticalAlignment = Alignment.CenterVertically
                                 ) {
-                                    IconButton(
-                                        onClick = { viewModel.toggleWatchlist() },
-                                        modifier = Modifier.size(36.dp)
+                                    Box(
+                                        modifier = Modifier
+                                            .size(36.dp)
+                                            .clip(CircleShape)
+                                            .background(MaterialTheme.colorScheme.surface.copy(alpha = 0.8f))
+                                            .clickable { onBackClick() },
+                                        contentAlignment = Alignment.Center
                                     ) {
                                         Icon(
-                                            imageVector = if (uiState.isWatchlist) Icons.Default.Check else Icons.Default.Add,
-                                            contentDescription = if (uiState.isWatchlist) stringResource(R.string.in_watchlist) else stringResource(R.string.my_list),
-                                            tint = MaterialTheme.colorScheme.onBackground,
-                                            modifier = Modifier.size(24.dp)
+                                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                                            contentDescription = "Back",
+                                            tint = MaterialTheme.colorScheme.onSurface,
+                                            modifier = Modifier.size(18.dp)
                                         )
                                     }
 
-                                    IconButton(
-                                        onClick = { },
-                                        modifier = Modifier.size(36.dp)
+                                    Box(
+                                        modifier = Modifier
+                                            .background(Color.Black.copy(alpha = 0.65f), RoundedCornerShape(12.dp))
+                                            .padding(horizontal = 10.dp, vertical = 4.dp)
+                                    ) {
+                                        Text(
+                                            text = stringResource(R.string.preview),
+                                            color = Color.White,
+                                            fontSize = 11.sp,
+                                            fontWeight = FontWeight.Medium
+                                        )
+                                    }
+                                }
+
+                                // 16:9 Backdrop Card
+                                Card(
+                                    shape = RoundedCornerShape(14.dp),
+                                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant),
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .aspectRatio(16f / 9f)
+                                ) {
+                                    AsyncImage(
+                                        model = Constants.backdropUrl(movie.backdropPath)
+                                            ?: Constants.posterUrl(movie.posterPath),
+                                        contentDescription = movie.title,
+                                        modifier = Modifier.fillMaxSize(),
+                                        contentScale = ContentScale.Crop
+                                    )
+                                }
+
+                                Spacer(modifier = Modifier.height(12.dp))
+
+                                // Play Trailer CTA
+                                PlayTrailerButton(movie = movie, context = context)
+
+                                Spacer(modifier = Modifier.height(8.dp))
+
+                                // Watchlist & Download Row
+                                Row(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    horizontalArrangement = Arrangement.SpaceEvenly,
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    DetailActionButtons(
+                                        isWatchlist = uiState.isWatchlist,
+                                        onToggleWatchlist = { viewModel.toggleWatchlist() }
+                                    )
+                                }
+                            }
+
+                            // Right Pane: Info, Storyline, Cast, Videos, Similar
+                            Column(
+                                modifier = Modifier
+                                    .weight(1f)
+                                    .fillMaxHeight()
+                                    .verticalScroll(rememberScrollState())
+                                    .padding(start = 12.dp)
+                            ) {
+                                DetailInfoSection(
+                                    movie = movie,
+                                    uiState = uiState,
+                                    viewModel = viewModel,
+                                    context = context,
+                                    onMovieClick = onMovieClick,
+                                    showPlayButton = false,
+                                    showActionButtons = false
+                                )
+                            }
+                        }
+                    } else {
+                        // Portrait Layout: Single vertical scroll
+                        val scrollState = rememberScrollState()
+
+                        Column(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .verticalScroll(scrollState)
+                        ) {
+                            // 1. Backdrop Image with Top Action Buttons and "Preview" Badge
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .height(280.dp)
+                            ) {
+                                AsyncImage(
+                                    model = Constants.backdropUrl(movie.backdropPath)
+                                        ?: Constants.posterUrl(movie.posterPath),
+                                    contentDescription = movie.title,
+                                    modifier = Modifier.fillMaxSize(),
+                                    contentScale = ContentScale.Crop
+                                )
+
+                                // Bottom gradient blending smoothly to theme background
+                                Box(
+                                    modifier = Modifier
+                                        .fillMaxSize()
+                                        .background(
+                                            Brush.verticalGradient(
+                                                colorStops = arrayOf(
+                                                    0.0f to Color.Black.copy(alpha = 0.5f),
+                                                    0.4f to Color.Transparent,
+                                                    0.8f to bgColor.copy(alpha = 0.8f),
+                                                    1.0f to bgColor
+                                                )
+                                            )
+                                        )
+                                )
+
+                                // Top Back and More buttons
+                                Row(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .statusBarsPadding()
+                                        .padding(horizontal = 16.dp, vertical = 8.dp),
+                                    horizontalArrangement = Arrangement.SpaceBetween,
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    Box(
+                                        modifier = Modifier
+                                            .size(38.dp)
+                                            .clip(CircleShape)
+                                            .background(MaterialTheme.colorScheme.surface.copy(alpha = 0.8f))
+                                            .clickable { onBackClick() },
+                                        contentAlignment = Alignment.Center
                                     ) {
                                         Icon(
-                                            imageVector = Icons.Default.FileDownload,
-                                            contentDescription = stringResource(R.string.download),
-                                            tint = MaterialTheme.colorScheme.onBackground,
+                                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                                            contentDescription = "Back",
+                                            tint = MaterialTheme.colorScheme.onSurface,
+                                            modifier = Modifier.size(20.dp)
+                                        )
+                                    }
+
+                                    Box(
+                                        modifier = Modifier
+                                            .size(38.dp)
+                                            .clip(CircleShape)
+                                            .background(MaterialTheme.colorScheme.surface.copy(alpha = 0.8f))
+                                            .clickable { },
+                                        contentAlignment = Alignment.Center
+                                    ) {
+                                        Icon(
+                                            imageVector = Icons.Default.MoreHoriz,
+                                            contentDescription = "More",
+                                            tint = MaterialTheme.colorScheme.onSurface,
                                             modifier = Modifier.size(22.dp)
                                         )
                                     }
                                 }
-                            }
 
-                            Spacer(modifier = Modifier.height(10.dp))
-
-                            // 3. Metadata Row: 95% match, Year, Duration, Rating Badge, HD Badge
-                            val matchPercentage = (movie.voteAverage * 10).toInt().coerceIn(75, 99)
-                            val releaseYear = movie.releaseDate?.take(4) ?: "2023"
-                            val durationText = movie.runtime?.takeIf { it > 0 }?.let { "${it / 60}h ${it % 60}m" } ?: "2h 15m"
-
-                            Row(
-                                verticalAlignment = Alignment.CenterVertically,
-                                horizontalArrangement = Arrangement.spacedBy(10.dp)
-                            ) {
-                                Text(
-                                    text = stringResource(R.string.match, matchPercentage),
-                                    color = AccentGreen,
-                                    fontSize = 13.sp,
-                                    fontWeight = FontWeight.Bold
-                                )
-
-                                Text(
-                                    text = releaseYear,
-                                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                                    fontSize = 13.sp
-                                )
-
-                                Text(
-                                    text = durationText,
-                                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                                    fontSize = 13.sp
-                                )
-
-                                // R / Age rating badge
+                                // "Preview" Tag at bottom-left of backdrop
                                 Box(
                                     modifier = Modifier
-                                        .border(1.dp, MaterialTheme.colorScheme.outline.copy(alpha = 0.4f), RoundedCornerShape(3.dp))
-                                        .padding(horizontal = 5.dp, vertical = 1.dp)
+                                        .align(Alignment.BottomStart)
+                                        .padding(start = 20.dp, bottom = 12.dp)
+                                        .background(Color.Black.copy(alpha = 0.65f), RoundedCornerShape(12.dp))
+                                        .padding(horizontal = 10.dp, vertical = 4.dp)
                                 ) {
                                     Text(
-                                        text = "R",
-                                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                                        fontSize = 10.sp,
-                                        fontWeight = FontWeight.Bold
-                                    )
-                                }
-
-                                // HD badge
-                                Box(
-                                    modifier = Modifier
-                                        .border(1.dp, MaterialTheme.colorScheme.outline.copy(alpha = 0.4f), RoundedCornerShape(3.dp))
-                                        .padding(horizontal = 5.dp, vertical = 1.dp)
-                                ) {
-                                    Text(
-                                        text = "HD",
-                                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                                        fontSize = 10.sp,
-                                        fontWeight = FontWeight.Bold
+                                        text = stringResource(R.string.preview),
+                                        color = Color.White,
+                                        fontSize = 11.sp,
+                                        fontWeight = FontWeight.Medium
                                     )
                                 }
                             }
 
-                            Spacer(modifier = Modifier.height(10.dp))
-
-                            // 4. "Most Liked" Highlight Row
-                            Row(
-                                verticalAlignment = Alignment.CenterVertically,
-                                horizontalArrangement = Arrangement.spacedBy(6.dp)
-                            ) {
-                                Box(
-                                    modifier = Modifier
-                                        .size(20.dp)
-                                        .clip(CircleShape)
-                                        .background(NetflixRed),
-                                    contentAlignment = Alignment.Center
-                                ) {
-                                    Icon(
-                                        imageVector = Icons.Default.ThumbUp,
-                                        contentDescription = null,
-                                        tint = Color.White,
-                                        modifier = Modifier.size(11.dp)
-                                    )
-                                }
-
-                                Text(
-                                    text = stringResource(R.string.most_liked),
-                                    color = MaterialTheme.colorScheme.onBackground,
-                                    fontSize = 13.sp,
-                                    fontWeight = FontWeight.Bold
+                            // Content Body
+                            Column(modifier = Modifier.padding(horizontal = 20.dp)) {
+                                DetailInfoSection(
+                                    movie = movie,
+                                    uiState = uiState,
+                                    viewModel = viewModel,
+                                    context = context,
+                                    onMovieClick = onMovieClick,
+                                    showPlayButton = true,
+                                    showActionButtons = true
                                 )
-                            }
-
-                            Spacer(modifier = Modifier.height(16.dp))
-
-                            // 5. Full Width Play Button
-                            val trailer = movie.videos.firstOrNull {
-                                it.site.equals("YouTube", ignoreCase = true) &&
-                                        (it.type.equals("Trailer", ignoreCase = true) || it.type.equals("Teaser", ignoreCase = true))
-                            }
-
-                            Button(
-                                onClick = {
-                                    if (trailer != null) {
-                                        val intent = Intent(
-                                            Intent.ACTION_VIEW,
-                                            Uri.parse(Constants.youtubeWatchUrl(trailer.key))
-                                        )
-                                        context.startActivity(intent)
-                                    }
-                                },
-                                colors = ButtonDefaults.buttonColors(
-                                    containerColor = MaterialTheme.colorScheme.secondaryContainer,
-                                    contentColor = MaterialTheme.colorScheme.onSecondaryContainer
-                                ),
-                                shape = RoundedCornerShape(24.dp),
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .height(48.dp)
-                            ) {
-                                Icon(
-                                    imageVector = Icons.Default.PlayArrow,
-                                    contentDescription = null,
-                                    modifier = Modifier.size(20.dp),
-                                    tint = MaterialTheme.colorScheme.onSecondaryContainer
-                                )
-                                Spacer(modifier = Modifier.width(6.dp))
-                                Text(
-                                    text = stringResource(R.string.hero_play),
-                                    fontWeight = FontWeight.Bold,
-                                    fontSize = 15.sp,
-                                    color = MaterialTheme.colorScheme.onSecondaryContainer
-                                )
-                            }
-
-                            Spacer(modifier = Modifier.height(24.dp))
-
-                            // 6. Prolog (Storyline) Section
-                            Text(
-                                text = stringResource(R.string.prolog),
-                                color = MaterialTheme.colorScheme.onBackground,
-                                style = MaterialTheme.typography.titleMedium,
-                                fontWeight = FontWeight.Bold,
-                                fontSize = 18.sp
-                            )
-                            Spacer(modifier = Modifier.height(8.dp))
-                            Text(
-                                text = movie.overview.ifBlank { stringResource(R.string.no_synopsis) },
-                                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                                style = MaterialTheme.typography.bodyMedium,
-                                lineHeight = 21.sp,
-                                fontSize = 13.sp
-                            )
-
-                            Spacer(modifier = Modifier.height(24.dp))
-
-                            // 7. Top Cast Section
-                            if (movie.casts.isNotEmpty()) {
-                                Text(
-                                    text = stringResource(R.string.top_cast),
-                                    color = MaterialTheme.colorScheme.onBackground,
-                                    style = MaterialTheme.typography.titleMedium,
-                                    fontWeight = FontWeight.Bold,
-                                    fontSize = 18.sp
-                                )
-                                Spacer(modifier = Modifier.height(12.dp))
-                                LazyRow(
-                                    horizontalArrangement = Arrangement.spacedBy(16.dp)
-                                ) {
-                                    items(movie.casts, key = { it.id }) { cast ->
-                                        CastItem(cast = cast)
-                                    }
-                                }
-                            }
-
-                            // Videos section if available
-                            if (movie.videos.isNotEmpty()) {
-                                Spacer(modifier = Modifier.height(24.dp))
-                                Text(
-                                    text = stringResource(R.string.trailers_clips),
-                                    color = MaterialTheme.colorScheme.onBackground,
-                                    style = MaterialTheme.typography.titleMedium,
-                                    fontWeight = FontWeight.Bold,
-                                    fontSize = 18.sp
-                                )
-                                Spacer(modifier = Modifier.height(12.dp))
-                                LazyRow(
-                                    horizontalArrangement = Arrangement.spacedBy(12.dp)
-                                ) {
-                                    items(movie.videos.take(5), key = { it.id }) { video ->
-                                        VideoThumbnailItem(
-                                            video = video,
-                                            onClick = {
-                                                val intent = Intent(
-                                                    Intent.ACTION_VIEW,
-                                                    Uri.parse(Constants.youtubeWatchUrl(video.key))
-                                                )
-                                                context.startActivity(intent)
-                                            }
-                                        )
-                                    }
-                                }
                             }
                         }
-
-                        // Similar movies
-                        if (movie.similar.isNotEmpty()) {
-                            Spacer(modifier = Modifier.height(24.dp))
-                            SectionRow(
-                                title = stringResource(R.string.more_like_this),
-                                movies = movie.similar,
-                                onMovieClick = onMovieClick
-                            )
-                        }
-
-                        Spacer(modifier = Modifier.height(40.dp))
                     }
                 }
             }
         }
     }
+}
+
+@Composable
+private fun PlayTrailerButton(
+    movie: MovieDetail,
+    context: Context,
+    modifier: Modifier = Modifier
+) {
+    val trailer = movie.videos.firstOrNull {
+        it.site.equals("YouTube", ignoreCase = true) &&
+                (it.type.equals("Trailer", ignoreCase = true) || it.type.equals("Teaser", ignoreCase = true))
+    }
+
+    Button(
+        onClick = {
+            if (trailer != null) {
+                val intent = Intent(
+                    Intent.ACTION_VIEW,
+                    Uri.parse(Constants.youtubeWatchUrl(trailer.key))
+                )
+                context.startActivity(intent)
+            }
+        },
+        colors = ButtonDefaults.buttonColors(
+            containerColor = MaterialTheme.colorScheme.secondaryContainer,
+            contentColor = MaterialTheme.colorScheme.onSecondaryContainer
+        ),
+        shape = RoundedCornerShape(24.dp),
+        modifier = modifier
+            .fillMaxWidth()
+            .height(48.dp)
+    ) {
+        Icon(
+            imageVector = Icons.Default.PlayArrow,
+            contentDescription = null,
+            modifier = Modifier.size(20.dp),
+            tint = MaterialTheme.colorScheme.onSecondaryContainer
+        )
+        Spacer(modifier = Modifier.width(6.dp))
+        Text(
+            text = stringResource(R.string.hero_play),
+            fontWeight = FontWeight.Bold,
+            fontSize = 15.sp,
+            color = MaterialTheme.colorScheme.onSecondaryContainer
+        )
+    }
+}
+
+@Composable
+private fun DetailActionButtons(
+    isWatchlist: Boolean,
+    onToggleWatchlist: () -> Unit
+) {
+    Row(
+        horizontalArrangement = Arrangement.spacedBy(8.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        IconButton(
+            onClick = onToggleWatchlist,
+            modifier = Modifier.size(36.dp)
+        ) {
+            Icon(
+                imageVector = if (isWatchlist) Icons.Default.Check else Icons.Default.Add,
+                contentDescription = if (isWatchlist) stringResource(R.string.in_watchlist) else stringResource(R.string.my_list),
+                tint = MaterialTheme.colorScheme.onBackground,
+                modifier = Modifier.size(24.dp)
+            )
+        }
+
+        IconButton(
+            onClick = { },
+            modifier = Modifier.size(36.dp)
+        ) {
+            Icon(
+                imageVector = Icons.Default.FileDownload,
+                contentDescription = stringResource(R.string.download),
+                tint = MaterialTheme.colorScheme.onBackground,
+                modifier = Modifier.size(22.dp)
+            )
+        }
+    }
+}
+
+@Composable
+private fun DetailInfoSection(
+    movie: MovieDetail,
+    uiState: DetailUiState,
+    viewModel: DetailViewModel,
+    context: Context,
+    onMovieClick: (Int) -> Unit,
+    showPlayButton: Boolean,
+    showActionButtons: Boolean
+) {
+    Spacer(modifier = Modifier.height(12.dp))
+
+    // Title & Right Action Buttons
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Text(
+            text = movie.title.uppercase(),
+            color = NetflixRed,
+            style = MaterialTheme.typography.titleLarge.copy(
+                fontWeight = FontWeight.Black,
+                letterSpacing = 1.sp
+            ),
+            modifier = Modifier.weight(1f),
+            maxLines = 2,
+            overflow = TextOverflow.Ellipsis
+        )
+
+        if (showActionButtons) {
+            DetailActionButtons(
+                isWatchlist = uiState.isWatchlist,
+                onToggleWatchlist = { viewModel.toggleWatchlist() }
+            )
+        }
+    }
+
+    Spacer(modifier = Modifier.height(10.dp))
+
+    // Metadata Row: 95% match, Year, Duration, Rating Badge, HD Badge
+    val matchPercentage = (movie.voteAverage * 10).toInt().coerceIn(75, 99)
+    val releaseYear = movie.releaseDate?.take(4) ?: "2023"
+    val durationText = movie.runtime?.takeIf { it > 0 }?.let { "${it / 60}h ${it % 60}m" } ?: "2h 15m"
+
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(10.dp)
+    ) {
+        Text(
+            text = stringResource(R.string.match, matchPercentage),
+            color = AccentGreen,
+            fontSize = 13.sp,
+            fontWeight = FontWeight.Bold
+        )
+
+        Text(
+            text = releaseYear,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            fontSize = 13.sp
+        )
+
+        Text(
+            text = durationText,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            fontSize = 13.sp
+        )
+
+        // R / Age rating badge
+        Box(
+            modifier = Modifier
+                .border(1.dp, MaterialTheme.colorScheme.outline.copy(alpha = 0.4f), RoundedCornerShape(3.dp))
+                .padding(horizontal = 5.dp, vertical = 1.dp)
+        ) {
+            Text(
+                text = "R",
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                fontSize = 10.sp,
+                fontWeight = FontWeight.Bold
+            )
+        }
+
+        // HD badge
+        Box(
+            modifier = Modifier
+                .border(1.dp, MaterialTheme.colorScheme.outline.copy(alpha = 0.4f), RoundedCornerShape(3.dp))
+                .padding(horizontal = 5.dp, vertical = 1.dp)
+        ) {
+            Text(
+                text = "HD",
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                fontSize = 10.sp,
+                fontWeight = FontWeight.Bold
+            )
+        }
+    }
+
+    Spacer(modifier = Modifier.height(10.dp))
+
+    // "Most Liked" Highlight Row
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(6.dp)
+    ) {
+        Box(
+            modifier = Modifier
+                .size(20.dp)
+                .clip(CircleShape)
+                .background(NetflixRed),
+            contentAlignment = Alignment.Center
+        ) {
+            Icon(
+                imageVector = Icons.Default.ThumbUp,
+                contentDescription = null,
+                tint = Color.White,
+                modifier = Modifier.size(11.dp)
+            )
+        }
+
+        Text(
+            text = stringResource(R.string.most_liked),
+            color = MaterialTheme.colorScheme.onBackground,
+            fontSize = 13.sp,
+            fontWeight = FontWeight.Bold
+        )
+    }
+
+    if (showPlayButton) {
+        Spacer(modifier = Modifier.height(16.dp))
+        PlayTrailerButton(movie = movie, context = context)
+    }
+
+    Spacer(modifier = Modifier.height(24.dp))
+
+    // Prolog (Storyline) Section
+    Text(
+        text = stringResource(R.string.prolog),
+        color = MaterialTheme.colorScheme.onBackground,
+        style = MaterialTheme.typography.titleMedium,
+        fontWeight = FontWeight.Bold,
+        fontSize = 18.sp
+    )
+    Spacer(modifier = Modifier.height(8.dp))
+    Text(
+        text = movie.overview.ifBlank { stringResource(R.string.no_synopsis) },
+        color = MaterialTheme.colorScheme.onSurfaceVariant,
+        style = MaterialTheme.typography.bodyMedium,
+        lineHeight = 21.sp,
+        fontSize = 13.sp
+    )
+
+    Spacer(modifier = Modifier.height(24.dp))
+
+    // Top Cast Section
+    if (movie.casts.isNotEmpty()) {
+        Text(
+            text = stringResource(R.string.top_cast),
+            color = MaterialTheme.colorScheme.onBackground,
+            style = MaterialTheme.typography.titleMedium,
+            fontWeight = FontWeight.Bold,
+            fontSize = 18.sp
+        )
+        Spacer(modifier = Modifier.height(12.dp))
+        LazyRow(
+            horizontalArrangement = Arrangement.spacedBy(16.dp)
+        ) {
+            items(movie.casts, key = { it.id }) { cast ->
+                CastItem(cast = cast)
+            }
+        }
+    }
+
+    // Videos section if available
+    if (movie.videos.isNotEmpty()) {
+        Spacer(modifier = Modifier.height(24.dp))
+        Text(
+            text = stringResource(R.string.trailers_clips),
+            color = MaterialTheme.colorScheme.onBackground,
+            style = MaterialTheme.typography.titleMedium,
+            fontWeight = FontWeight.Bold,
+            fontSize = 18.sp
+        )
+        Spacer(modifier = Modifier.height(12.dp))
+        LazyRow(
+            horizontalArrangement = Arrangement.spacedBy(12.dp)
+        ) {
+            items(movie.videos.take(5), key = { it.id }) { video ->
+                VideoThumbnailItem(
+                    video = video,
+                    onClick = {
+                        val intent = Intent(
+                            Intent.ACTION_VIEW,
+                            Uri.parse(Constants.youtubeWatchUrl(video.key))
+                        )
+                        context.startActivity(intent)
+                    }
+                )
+            }
+        }
+    }
+
+    // Similar movies
+    if (movie.similar.isNotEmpty()) {
+        Spacer(modifier = Modifier.height(24.dp))
+        SectionRow(
+            title = stringResource(R.string.more_like_this),
+            movies = movie.similar,
+            onMovieClick = onMovieClick
+        )
+    }
+
+    Spacer(modifier = Modifier.height(40.dp))
 }
 
 @Composable

@@ -1,5 +1,7 @@
 package com.example.jetpack.ui.components
 
+import android.content.res.Configuration
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -213,15 +215,24 @@ fun HeroBanner(
 ) {
     if (movie == null) return
     val bgColor = MaterialTheme.colorScheme.background
+    val configuration = LocalConfiguration.current
+    val isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
+
+    val bannerHeight = if (isLandscape) 260.dp else 520.dp
+    val imageUrl = if (isLandscape) {
+        Constants.backdropUrl(movie.backdropPath) ?: Constants.posterUrl(movie.posterPath)
+    } else {
+        Constants.posterUrl(movie.posterPath) ?: Constants.backdropUrl(movie.backdropPath)
+    }
 
     Box(
         modifier = modifier
             .fillMaxWidth()
-            .height(520.dp)
+            .height(bannerHeight)
             .clickable { onMovieClick(movie.id) }
     ) {
         AsyncImage(
-            model = Constants.posterUrl(movie.posterPath) ?: Constants.backdropUrl(movie.backdropPath),
+            model = imageUrl,
             contentDescription = movie.title,
             modifier = Modifier.fillMaxSize(),
             contentScale = ContentScale.Crop
@@ -248,22 +259,29 @@ fun HeroBanner(
             modifier = Modifier
                 .align(Alignment.BottomCenter)
                 .fillMaxWidth()
-                .padding(bottom = 20.dp, start = 20.dp, end = 20.dp),
+                .padding(
+                    bottom = if (isLandscape) 12.dp else 20.dp,
+                    start = 20.dp,
+                    end = 20.dp
+                ),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(
                 text = movie.title.uppercase(),
                 color = MaterialTheme.colorScheme.onBackground,
-                style = MaterialTheme.typography.headlineMedium.copy(
+                style = if (isLandscape) MaterialTheme.typography.titleLarge.copy(
+                    fontWeight = FontWeight.Black,
+                    letterSpacing = 1.sp
+                ) else MaterialTheme.typography.headlineMedium.copy(
                     fontWeight = FontWeight.Black,
                     letterSpacing = 2.sp
                 ),
                 textAlign = TextAlign.Center,
-                maxLines = 2,
+                maxLines = if (isLandscape) 1 else 2,
                 overflow = TextOverflow.Ellipsis
             )
 
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(if (isLandscape) 8.dp else 16.dp))
 
             // Action buttons: ▶ Play & Details
             Row(
@@ -277,7 +295,10 @@ fun HeroBanner(
                         contentColor = MaterialTheme.colorScheme.onSecondaryContainer
                     ),
                     shape = RoundedCornerShape(24.dp),
-                    contentPadding = PaddingValues(horizontal = 24.dp, vertical = 10.dp)
+                    contentPadding = PaddingValues(
+                        horizontal = 24.dp,
+                        vertical = if (isLandscape) 6.dp else 10.dp
+                    )
                 ) {
                     Icon(
                         imageVector = Icons.Default.PlayArrow,
@@ -301,7 +322,10 @@ fun HeroBanner(
                     ),
                     border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline.copy(alpha = 0.4f)),
                     shape = RoundedCornerShape(24.dp),
-                    contentPadding = PaddingValues(horizontal = 24.dp, vertical = 10.dp)
+                    contentPadding = PaddingValues(
+                        horizontal = 24.dp,
+                        vertical = if (isLandscape) 6.dp else 10.dp
+                    )
                 ) {
                     Text(
                         text = stringResource(R.string.hero_details),
