@@ -25,7 +25,6 @@ sealed class Screen(val route: String, val title: String? = null, val icon: Imag
 val bottomNavItems = listOf(
     Screen.Home,
     Screen.Explore,
-    Screen.Downloads,
     Screen.Settings
 )
 

@@ -150,32 +150,15 @@ fun HomeScreen(
                         Spacer(modifier = Modifier.height(40.dp))
                     }
 
-                    // Floating Top Bar (Profile on Left, Search on Right)
+                    // Floating Top Bar (Search on Right)
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
                             .statusBarsPadding()
                             .padding(horizontal = 20.dp, vertical = 12.dp),
-                        horizontalArrangement = Arrangement.SpaceBetween,
+                        horizontalArrangement = Arrangement.End,
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        // User Avatar (Opens Settings)
-                        Box(
-                            modifier = Modifier
-                                .size(40.dp)
-                                .clip(CircleShape)
-                                .background(MaterialTheme.colorScheme.surface.copy(alpha = 0.85f))
-                                .clickable { onProfileClick() },
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Icon(
-                                imageVector = Icons.Default.Person,
-                                contentDescription = "Profile",
-                                tint = MaterialTheme.colorScheme.onSurface,
-                                modifier = Modifier.size(24.dp)
-                            )
-                        }
-
                         // Search Button
                         Box(
                             modifier = Modifier

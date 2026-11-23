@@ -3,6 +3,7 @@ package com.example.jetpack.ui.screens.settings
 import android.app.Activity
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -45,6 +46,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -149,7 +151,7 @@ fun SettingsScreen(
 
                 // Option: System Default
                 ThemeOptionCard(
-                    icon = "🌓",
+                    icon = Icons.Default.BrightnessAuto,
                     title = stringResource(R.string.theme_system),
                     subtitle = "Auto (System)",
                     isSelected = currentTheme == ThemeHelper.THEME_SYSTEM,
@@ -160,7 +162,7 @@ fun SettingsScreen(
 
                 // Option: Not Night (Light Mode)
                 ThemeOptionCard(
-                    icon = "☀️",
+                    icon = Icons.Default.LightMode,
                     title = stringResource(R.string.theme_light),
                     subtitle = "Light Mode",
                     isSelected = currentTheme == ThemeHelper.THEME_LIGHT,
@@ -171,7 +173,7 @@ fun SettingsScreen(
 
                 // Option: Night (Dark Mode)
                 ThemeOptionCard(
-                    icon = "🌙",
+                    icon = Icons.Default.DarkMode,
                     title = stringResource(R.string.theme_dark),
                     subtitle = "Dark Mode",
                     isSelected = currentTheme == ThemeHelper.THEME_DARK,
@@ -212,7 +214,7 @@ fun SettingsScreen(
 
                 // Option: English
                 LanguageOptionCard(
-                    flag = "🇬🇧",
+                    badgeText = "EN",
                     title = stringResource(R.string.english),
                     subtitle = "English (US)",
                     isSelected = currentLanguage == LocaleHelper.LANGUAGE_EN,
@@ -229,7 +231,7 @@ fun SettingsScreen(
 
                 // Option: Bahasa Indonesia
                 LanguageOptionCard(
-                    flag = "🇮🇩",
+                    badgeText = "ID",
                     title = stringResource(R.string.indonesian),
                     subtitle = "Bahasa Indonesia (ID)",
                     isSelected = currentLanguage == LocaleHelper.LANGUAGE_IN,
@@ -319,7 +321,7 @@ fun SettingsScreen(
 
 @Composable
 private fun ThemeOptionCard(
-    icon: String,
+    icon: ImageVector,
     title: String,
     subtitle: String,
     isSelected: Boolean,
@@ -354,12 +356,17 @@ private fun ThemeOptionCard(
                     modifier = Modifier
                         .size(42.dp)
                         .clip(CircleShape)
-                        .background(MaterialTheme.colorScheme.surfaceVariant),
+                        .background(
+                            if (isSelected) MaterialTheme.colorScheme.primary.copy(alpha = 0.12f)
+                            else MaterialTheme.colorScheme.surfaceVariant
+                        ),
                     contentAlignment = Alignment.Center
                 ) {
-                    Text(
-                        text = icon,
-                        fontSize = 20.sp
+                    Icon(
+                        imageVector = icon,
+                        contentDescription = title,
+                        tint = if (isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant,
+                        modifier = Modifier.size(22.dp)
                     )
                 }
 
@@ -410,7 +417,7 @@ private fun ThemeOptionCard(
 
 @Composable
 private fun LanguageOptionCard(
-    flag: String,
+    badgeText: String,
     title: String,
     subtitle: String,
     isSelected: Boolean,
@@ -444,13 +451,25 @@ private fun LanguageOptionCard(
                 Box(
                     modifier = Modifier
                         .size(42.dp)
-                        .clip(CircleShape)
-                        .background(MaterialTheme.colorScheme.surfaceVariant),
+                        .clip(RoundedCornerShape(12.dp))
+                        .background(
+                            if (isSelected) MaterialTheme.colorScheme.primary.copy(alpha = 0.12f)
+                            else MaterialTheme.colorScheme.surfaceVariant
+                        )
+                        .border(
+                            width = 1.dp,
+                            color = if (isSelected) MaterialTheme.colorScheme.primary.copy(alpha = 0.4f)
+                            else MaterialTheme.colorScheme.outline.copy(alpha = 0.2f),
+                            shape = RoundedCornerShape(12.dp)
+                        ),
                     contentAlignment = Alignment.Center
                 ) {
                     Text(
-                        text = flag,
-                        fontSize = 22.sp
+                        text = badgeText,
+                        fontWeight = FontWeight.ExtraBold,
+                        fontSize = 14.sp,
+                        letterSpacing = 1.sp,
+                        color = if (isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface
                     )
                 }
 

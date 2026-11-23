@@ -7,6 +7,8 @@ import com.example.jetpack.core.common.Resource
 import com.example.jetpack.domain.model.Genre
 import com.example.jetpack.domain.model.Movie
 import com.example.jetpack.domain.repository.MovieRepository
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -33,6 +35,7 @@ data class ExploreUiState(
         Genre(10752, "War")
     ),
     val selectedGenreId: Int = 28, // Default to Action
+    val searchQuery: String = "",
     val movies: List<Movie> = emptyList(),
     val isLoading: Boolean = false,
     val error: String? = null
@@ -45,13 +48,42 @@ class ExploreViewModel(
     private val _uiState = MutableStateFlow(ExploreUiState())
     val uiState: StateFlow<ExploreUiState> = _uiState.asStateFlow()
 
+    private var searchJob: Job? = null
+
     init {
         loadGenreMovies(_uiState.value.selectedGenreId)
     }
 
+    fun onSearchQueryChanged(query: String) {
+        _uiState.update { it.copy(searchQuery = query) }
+        searchJob?.cancel()
+
+        if (query.isBlank()) {
+            loadGenreMovies(_uiState.value.selectedGenreId)
+        } else {
+            searchJob = viewModelScope.launch {
+                delay(300) // Debounce
+                _uiState.update { it.copy(isLoading = true, error = null) }
+                repository.search(query).collect { res ->
+                    when (res) {
+                        is Resource.Success -> {
+                            _uiState.update { it.copy(movies = res.data, isLoading = false) }
+                        }
+                        is Resource.Error -> {
+                            _uiState.update { it.copy(error = res.message, isLoading = false) }
+                        }
+                        is Resource.Loading -> {
+                            _uiState.update { it.copy(isLoading = true) }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
     fun selectGenre(genreId: Int) {
-        if (_uiState.value.selectedGenreId == genreId) return
-        _uiState.update { it.copy(selectedGenreId = genreId) }
+        if (_uiState.value.selectedGenreId == genreId && _uiState.value.searchQuery.isBlank()) return
+        _uiState.update { it.copy(selectedGenreId = genreId, searchQuery = "") }
         loadGenreMovies(genreId)
     }
 
@@ -84,4 +116,3 @@ class ExploreViewModel(
             }
     }
 }
-

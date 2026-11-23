@@ -56,6 +56,7 @@ fun AppNavHost(
     val configuration = LocalConfiguration.current
     val isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
     val showBottomBar = bottomNavItems.any { it.route == currentRoute }
+    val navIconSelectedColor = if (currentTheme == ThemeHelper.THEME_DARK) Color.White else Color.Black
 
     Scaffold(
         bottomBar = {
@@ -87,7 +88,7 @@ fun AppNavHost(
                             },
                             alwaysShowLabel = false,
                             colors = NavigationBarItemDefaults.colors(
-                                selectedIconColor = MaterialTheme.colorScheme.primary,
+                                selectedIconColor = navIconSelectedColor,
                                 unselectedIconColor = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f),
                                 indicatorColor = Color.Transparent
                             )
@@ -135,7 +136,7 @@ fun AppNavHost(
                             },
                             alwaysShowLabel = false,
                             colors = NavigationRailItemDefaults.colors(
-                                selectedIconColor = MaterialTheme.colorScheme.primary,
+                                selectedIconColor = navIconSelectedColor,
                                 unselectedIconColor = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f),
                                 indicatorColor = Color.Transparent
                             )
@@ -168,9 +169,6 @@ fun AppNavHost(
                     },
                     onSeeAllClick = {
                         navController.navigate(Screen.Explore.route)
-                    },
-                    onProfileClick = {
-                        navController.navigate(Screen.Settings.route)
                     }
                 )
             }
