@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:aapt="http://schemas.android.com/aapt"
+    android:width="120dp"
+    android:height="120dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+
+    <!-- Diagonal 1: Back ribbon (top-right to bottom-left) -->
+    <path
+        android:pathData="M 68,22 L 84,22 L 40,86 L 24,86 Z">
+        <aapt:attr name="android:fillColor">
+            <gradient
+                android:startX="76"
+                android:startY="22"
+                android:endX="32"
+                android:endY="86"
+                android:type="linear">
+                <item android:color="#B80E17" android:offset="0.0" />
+                <item android:color="#80090E" android:offset="1.0" />
+            </gradient>
+        </aapt:attr>
+    </path>
+
+    <!-- Shadow under front ribbon crossing -->
+    <path
+        android:pathData="M 44,42 L 64,66 L 50,66 L 36,46 Z"
+        android:fillColor="#4D000000" />
+
+    <!-- Diagonal 2: Front ribbon (top-left to bottom-right) -->
+    <path
+        android:pathData="M 24,22 L 40,22 L 84,86 L 68,86 Z">
+        <aapt:attr name="android:fillColor">
+            <gradient
+                android:startX="24"
+                android:startY="22"
+                android:endX="84"
+                android:endY="86"
+                android:type="linear">
+                <item android:color="#FF2E36" android:offset="0.0" />
+                <item android:color="#E50914" android:offset="0.6" />
+                <item android:color="#B80E17" android:offset="1.0" />
+            </gradient>
+        </aapt:attr>
+    </path>
+
+    <!-- Glossy edge highlight -->
+    <path
+        android:pathData="M 24,22 L 28,22 L 72,86 L 68,86 Z"
+        android:fillColor="#33FFFFFF" />
+</vector>

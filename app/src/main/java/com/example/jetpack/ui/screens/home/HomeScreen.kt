@@ -1,5 +1,6 @@
 package com.example.jetpack.ui.screens.home
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -22,20 +23,25 @@ import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.example.jetpack.R
 import com.example.jetpack.domain.model.Movie
 import com.example.jetpack.ui.components.ErrorView
 import com.example.jetpack.ui.components.HeroBanner
 import com.example.jetpack.ui.components.LoadingView
 import com.example.jetpack.ui.components.SectionRow
+import com.example.jetpack.ui.theme.NetflixRed
 
 @Composable
 fun HomeScreen(
@@ -150,15 +156,34 @@ fun HomeScreen(
                         Spacer(modifier = Modifier.height(40.dp))
                     }
 
-                    // Floating Top Bar (Search on Right)
+                    // Floating Top Bar (Logo on Left, Search on Right)
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
                             .statusBarsPadding()
                             .padding(horizontal = 20.dp, vertical = 12.dp),
-                        horizontalArrangement = Arrangement.End,
+                        horizontalArrangement = Arrangement.SpaceBetween,
                         verticalAlignment = Alignment.CenterVertically
                     ) {
+                        // Xinema Brand
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(8.dp)
+                        ) {
+                            Image(
+                                painter = painterResource(id = R.drawable.ic_xinema_logo),
+                                contentDescription = "Xinema Logo",
+                                modifier = Modifier.size(28.dp)
+                            )
+                            Text(
+                                text = "XINEMA",
+                                color = NetflixRed,
+                                fontSize = 18.sp,
+                                fontWeight = FontWeight.Black,
+                                letterSpacing = 2.sp
+                            )
+                        }
+
                         // Search Button
                         Box(
                             modifier = Modifier

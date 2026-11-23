@@ -1,5 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <!-- Base Theme -->
+    <style name="Theme.Jetpack" parent="android:Theme.Material.NoActionBar">
+        <item name="android:windowBackground">@color/black</item>
+        <item name="android:statusBarColor">#000000</item>
+        <item name="android:navigationBarColor">#000000</item>
+    </style>
 
-    <style name="Theme.Jetpack" parent="android:Theme.Material.Light.NoActionBar" />
+    <!-- Starting Theme (Cold launch splash for Vivo Y21s / Android 11+) -->
+    <!-- Displays the black screen + red logo at OS level with 0ms delay, no black blank flash -->
+    <style name="Theme.Jetpack.Starting" parent="Theme.Jetpack">
+        <item name="android:windowBackground">@drawable/splash_background</item>
+        <item name="android:statusBarColor">#000000</item>
+        <item name="android:navigationBarColor">#000000</item>
+        <item name="android:windowLightStatusBar">false</item>
+        <item name="android:windowLightNavigationBar">false</item>
+    </style>
 </resources>
