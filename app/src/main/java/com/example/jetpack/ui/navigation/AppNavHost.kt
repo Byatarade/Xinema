@@ -2,6 +2,7 @@ package com.example.jetpack.ui.navigation
 
 import android.content.res.Configuration
 import androidx.compose.foundation.border
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -59,13 +60,22 @@ fun AppNavHost(
     val isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
     val showBottomBar = bottomNavItems.any { it.route == currentRoute }
 
+    val systemInDark = isSystemInDarkTheme()
+    val isDark = ThemeHelper.isDarkTheme(currentTheme, systemInDark)
+
+    val navContainerColor = if (isDark) Color(0xFF0F0F0F) else Color.White
+    val navBorderColor = if (isDark) Color(0xFF222222) else Color(0xFFE2E8F0)
+    val navUnselectedColor = if (isDark) Color(0xFF888888) else Color(0xFF64748B)
+    val navSelectedColor = Color.White
+    val navIndicatorColor = NetflixRed
+
     Scaffold(
         bottomBar = {
             if (showBottomBar && !isLandscape) {
                 NavigationBar(
-                    containerColor = Color.Black,
+                    containerColor = navContainerColor,
                     tonalElevation = 0.dp,
-                    modifier = Modifier.border(width = 0.5.dp, color = Color(0xFF222222))
+                    modifier = Modifier.border(width = 0.5.dp, color = navBorderColor)
                 ) {
                     bottomNavItems.forEach { screen ->
                         val selected = currentRoute == screen.route
@@ -90,9 +100,9 @@ fun AppNavHost(
                             },
                             alwaysShowLabel = false,
                             colors = NavigationBarItemDefaults.colors(
-                                selectedIconColor = Color.White,
-                                unselectedIconColor = Color(0xFF888888),
-                                indicatorColor = NetflixRed
+                                selectedIconColor = navSelectedColor,
+                                unselectedIconColor = navUnselectedColor,
+                                indicatorColor = navIndicatorColor
                             )
                         )
                     }
@@ -110,7 +120,7 @@ fun AppNavHost(
             // Navigation Rail when device is in Landscape
             if (showBottomBar && isLandscape) {
                 NavigationRail(
-                    containerColor = Color.Black,
+                    containerColor = navContainerColor,
                     header = {
                         Spacer(modifier = Modifier.height(12.dp))
                     }
@@ -138,9 +148,9 @@ fun AppNavHost(
                             },
                             alwaysShowLabel = false,
                             colors = NavigationRailItemDefaults.colors(
-                                selectedIconColor = Color.White,
-                                unselectedIconColor = Color(0xFF888888),
-                                indicatorColor = NetflixRed
+                                selectedIconColor = navSelectedColor,
+                                unselectedIconColor = navUnselectedColor,
+                                indicatorColor = navIndicatorColor
                             )
                         )
                     }
