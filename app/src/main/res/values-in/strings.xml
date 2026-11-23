@@ -59,4 +59,5 @@
     <string name="app_version">Versi</string>
     <string name="about_app">Tentang Xinema</string>
     <string name="about_description">Aplikasi streaming dan katalog film &amp; serial TV Xinema dengan TMDB API dan Jetpack Compose.</string>
+    <string name="splash_tagline">JELAJAHI FILM &amp; SERIAL TV</string>
 </resources>

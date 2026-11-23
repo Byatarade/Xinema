@@ -70,6 +70,7 @@ import com.example.jetpack.domain.model.MovieDetail
 import com.example.jetpack.domain.model.Video
 import com.example.jetpack.ui.components.ErrorView
 import com.example.jetpack.ui.components.LoadingView
+import com.example.jetpack.ui.components.MoviePosterCard
 import com.example.jetpack.ui.components.SectionRow
 import com.example.jetpack.ui.theme.AccentGreen
 import com.example.jetpack.ui.theme.NetflixRed
@@ -617,17 +618,29 @@ private fun DetailInfoSection(
         }
     }
 
-    // Similar movies
+    // Similar movies (More Like This)
     if (movie.similar.isNotEmpty()) {
         Spacer(modifier = Modifier.height(24.dp))
-        SectionRow(
-            title = stringResource(R.string.more_like_this),
-            movies = movie.similar,
-            onMovieClick = { id ->
-                val clicked = movie.similar.find { it.id == id }
-                onMovieClick(id, clicked?.mediaType ?: "movie")
-            }
+        Text(
+            text = stringResource(R.string.more_like_this),
+            color = MaterialTheme.colorScheme.onBackground,
+            style = MaterialTheme.typography.titleMedium,
+            fontWeight = FontWeight.Bold,
+            fontSize = 18.sp
         )
+        Spacer(modifier = Modifier.height(12.dp))
+        LazyRow(
+            horizontalArrangement = Arrangement.spacedBy(12.dp)
+        ) {
+            items(movie.similar, key = { it.id }) { similarMovie ->
+                MoviePosterCard(
+                    movie = similarMovie,
+                    onClick = {
+                        onMovieClick(similarMovie.id, similarMovie.mediaType.ifEmpty { "movie" })
+                    }
+                )
+            }
+        }
     }
 
     Spacer(modifier = Modifier.height(40.dp))

@@ -155,52 +155,6 @@ fun HomeScreen(
 
                         Spacer(modifier = Modifier.height(40.dp))
                     }
-
-                    // Floating Top Bar (Logo on Left, Search on Right)
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .statusBarsPadding()
-                            .padding(horizontal = 20.dp, vertical = 12.dp),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        // Xinema Brand
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.spacedBy(8.dp)
-                        ) {
-                            Image(
-                                painter = painterResource(id = R.drawable.ic_xinema_logo),
-                                contentDescription = "Xinema Logo",
-                                modifier = Modifier.size(28.dp)
-                            )
-                            Text(
-                                text = "XINEMA",
-                                color = NetflixRed,
-                                fontSize = 18.sp,
-                                fontWeight = FontWeight.Black,
-                                letterSpacing = 2.sp
-                            )
-                        }
-
-                        // Search Button
-                        Box(
-                            modifier = Modifier
-                                .size(40.dp)
-                                .clip(CircleShape)
-                                .background(MaterialTheme.colorScheme.surface.copy(alpha = 0.85f))
-                                .clickable { onSearchClick() },
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Icon(
-                                imageVector = Icons.Default.Search,
-                                contentDescription = "Search",
-                                tint = MaterialTheme.colorScheme.onSurface,
-                                modifier = Modifier.size(22.dp)
-                            )
-                        }
-                    }
                 }
             }
         }

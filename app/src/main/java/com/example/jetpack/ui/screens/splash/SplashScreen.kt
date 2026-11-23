@@ -133,11 +133,11 @@ fun SplashScreen(
 
             // Tagline
             Text(
-                text = "STREAM UNLIMITED",
+                text = androidx.compose.ui.res.stringResource(R.string.splash_tagline),
                 color = NetflixRed,
                 fontSize = 11.sp,
                 fontWeight = FontWeight.Bold,
-                letterSpacing = 4.sp,
+                letterSpacing = 3.sp,
                 modifier = Modifier.alpha(contentAlpha.value)
             )
         }
