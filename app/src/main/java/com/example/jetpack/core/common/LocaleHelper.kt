@@ -20,6 +20,10 @@ object LocaleHelper {
         return prefs.getString(KEY_LANGUAGE, null) ?: getDefaultLanguage()
     }
 
+    fun getTmdbLanguage(context: Context): String {
+        return if (getLanguage(context) == LANGUAGE_IN) "id-ID" else "en-US"
+    }
+
     private fun getDefaultLanguage(): String {
         val systemLang = Locale.getDefault().language
         return if (systemLang.equals("in", ignoreCase = true) || systemLang.equals("id", ignoreCase = true)) {

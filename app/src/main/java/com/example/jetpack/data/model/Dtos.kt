@@ -1,5 +1,6 @@
 package com.example.jetpack.data.model
 
+import com.example.jetpack.core.common.MovieSynopsisFallback
 import com.example.jetpack.domain.model.Cast
 import com.example.jetpack.domain.model.Genre
 import com.example.jetpack.domain.model.Movie
@@ -33,7 +34,7 @@ data class MovieDto(
         return Movie(
             id = id,
             title = title ?: name ?: "Untitled",
-            overview = overview ?: "",
+            overview = MovieSynopsisFallback.getIndonesianOverview(id, overview ?: ""),
             posterPath = posterPath,
             backdropPath = backdropPath,
             releaseDate = releaseDate ?: firstAirDate,
@@ -67,7 +68,7 @@ data class TvShowDto(
         return TvShow(
             id = id,
             name = name ?: "Untitled Series",
-            overview = overview ?: "",
+            overview = MovieSynopsisFallback.getIndonesianOverview(id, overview ?: ""),
             posterPath = posterPath,
             backdropPath = backdropPath,
             firstAirDate = firstAirDate,
@@ -97,7 +98,7 @@ data class MovieDetailDto(
             id = id,
             title = title ?: "Untitled",
             tagline = tagline,
-            overview = overview ?: "",
+            overview = MovieSynopsisFallback.getIndonesianOverview(id, overview ?: ""),
             posterPath = posterPath,
             backdropPath = backdropPath,
             releaseDate = releaseDate,

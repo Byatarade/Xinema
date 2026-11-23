@@ -1,7 +1,9 @@
 package com.example.jetpack.di
 
+import android.content.Context
 import com.example.jetpack.BuildConfig
 import com.example.jetpack.core.common.Constants
+import com.example.jetpack.core.common.LocaleHelper
 import com.example.jetpack.data.remote.AuthInterceptor
 import com.example.jetpack.data.remote.TmdbApiService
 import com.example.jetpack.data.repository.MovieRepositoryImpl
@@ -16,12 +18,13 @@ interface AppContainer {
     val movieRepository: MovieRepository
 }
 
-class DefaultAppContainer : AppContainer {
+class DefaultAppContainer(private val context: Context) : AppContainer {
 
     private val authInterceptor by lazy {
         AuthInterceptor(
             token = BuildConfig.TMDB_READ_ACCESS_TOKEN,
-            apiKey = BuildConfig.TMDB_API_KEY
+            apiKey = BuildConfig.TMDB_API_KEY,
+            languageProvider = { LocaleHelper.getTmdbLanguage(context) }
         )
     }
 
