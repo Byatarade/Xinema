@@ -1,11 +1,5 @@
 package com.example.jetpack.ui.components
 
-import androidx.compose.animation.core.FastOutSlowInEasing
-import androidx.compose.animation.core.RepeatMode
-import androidx.compose.animation.core.animateFloat
-import androidx.compose.animation.core.infiniteRepeatable
-import androidx.compose.animation.core.rememberInfiniteTransition
-import androidx.compose.animation.core.tween
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -24,10 +18,8 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.icons.filled.Warning
@@ -38,18 +30,15 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.shadow
-import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -57,16 +46,9 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
-import androidx.compose.ui.res.stringResource
 import com.example.jetpack.R
 import com.example.jetpack.core.common.Constants
 import com.example.jetpack.domain.model.Movie
-import com.example.jetpack.ui.theme.DarkBackground
-import com.example.jetpack.ui.theme.DarkPill
-import com.example.jetpack.ui.theme.DarkSurface
-import com.example.jetpack.ui.theme.DarkSurfaceVariant
-import com.example.jetpack.ui.theme.LightText
-import com.example.jetpack.ui.theme.MutedText
 import com.example.jetpack.ui.theme.NetflixRed
 import com.example.jetpack.ui.theme.StarGold
 import java.util.Locale
@@ -91,12 +73,12 @@ fun MoviePosterCard(
         modifier = cardModifier,
         shape = RoundedCornerShape(16.dp),
         colors = CardDefaults.cardColors(
-            containerColor = DarkSurfaceVariant
+            containerColor = MaterialTheme.colorScheme.surfaceVariant
         ),
-        border = BorderStroke(1.dp, Color.White.copy(alpha = 0.08f)),
+        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline.copy(alpha = 0.2f)),
         elevation = CardDefaults.cardElevation(
-            defaultElevation = 4.dp,
-            pressedElevation = 8.dp
+            defaultElevation = 3.dp,
+            pressedElevation = 6.dp
         )
     ) {
         Column {
@@ -104,7 +86,7 @@ fun MoviePosterCard(
                 modifier = Modifier
                     .fillMaxWidth()
                     .aspectRatio(2f / 3f)
-                    .background(DarkSurfaceVariant)
+                    .background(MaterialTheme.colorScheme.surfaceVariant)
             ) {
                 AsyncImage(
                     model = Constants.posterUrl(movie.posterPath) ?: Constants.backdropUrl(movie.backdropPath),
@@ -120,7 +102,7 @@ fun MoviePosterCard(
                         .background(
                             Brush.verticalGradient(
                                 colorStops = arrayOf(
-                                    0.0f to Color.Black.copy(alpha = 0.35f),
+                                    0.0f to Color.Black.copy(alpha = 0.3f),
                                     0.25f to Color.Transparent,
                                     0.75f to Color.Transparent,
                                     1.0f to Color.Black.copy(alpha = 0.45f)
@@ -148,7 +130,7 @@ fun MoviePosterCard(
                             Spacer(modifier = Modifier.width(3.dp))
                             Text(
                                 text = String.format(Locale.US, "%.1f", movie.voteAverage),
-                                color = LightText,
+                                color = Color.White,
                                 fontSize = 10.sp,
                                 fontWeight = FontWeight.Bold
                             )
@@ -161,7 +143,7 @@ fun MoviePosterCard(
                 Spacer(modifier = Modifier.height(4.dp))
                 Text(
                     text = movie.title,
-                    color = LightText,
+                    color = MaterialTheme.colorScheme.onBackground,
                     style = MaterialTheme.typography.bodySmall,
                     fontWeight = FontWeight.SemiBold,
                     maxLines = 1,
@@ -193,7 +175,7 @@ fun SectionRow(
         ) {
             Text(
                 text = title,
-                color = LightText,
+                color = MaterialTheme.colorScheme.onBackground,
                 style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.Bold,
                 fontSize = 18.sp
@@ -201,7 +183,7 @@ fun SectionRow(
 
             Text(
                 text = stringResource(R.string.see_all),
-                color = MutedText,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
                 fontSize = 13.sp,
                 fontWeight = FontWeight.Normal,
                 modifier = Modifier.clickable { onSeeAllClick?.invoke() }
@@ -222,7 +204,6 @@ fun SectionRow(
     }
 }
 
-
 @Composable
 fun HeroBanner(
     movie: Movie?,
@@ -231,6 +212,7 @@ fun HeroBanner(
     modifier: Modifier = Modifier
 ) {
     if (movie == null) return
+    val bgColor = MaterialTheme.colorScheme.background
 
     Box(
         modifier = modifier
@@ -245,17 +227,17 @@ fun HeroBanner(
             contentScale = ContentScale.Crop
         )
 
-        // Gradient overlay (fades to pure dark background at bottom)
+        // Gradient overlay fading to theme background
         Box(
             modifier = Modifier
                 .fillMaxSize()
                 .background(
                     Brush.verticalGradient(
                         colorStops = arrayOf(
-                            0.0f to Color.Black.copy(alpha = 0.35f),
-                            0.5f to Color.Transparent,
-                            0.75f to DarkBackground.copy(alpha = 0.7f),
-                            1.0f to DarkBackground
+                            0.0f to Color.Black.copy(alpha = 0.4f),
+                            0.45f to Color.Transparent,
+                            0.75f to bgColor.copy(alpha = 0.75f),
+                            1.0f to bgColor
                         )
                     )
                 )
@@ -271,7 +253,7 @@ fun HeroBanner(
         ) {
             Text(
                 text = movie.title.uppercase(),
-                color = LightText,
+                color = MaterialTheme.colorScheme.onBackground,
                 style = MaterialTheme.typography.headlineMedium.copy(
                     fontWeight = FontWeight.Black,
                     letterSpacing = 2.sp
@@ -291,8 +273,8 @@ fun HeroBanner(
                 Button(
                     onClick = { onPlayClick(movie.id) },
                     colors = ButtonDefaults.buttonColors(
-                        containerColor = DarkPill,
-                        contentColor = LightText
+                        containerColor = MaterialTheme.colorScheme.secondaryContainer,
+                        contentColor = MaterialTheme.colorScheme.onSecondaryContainer
                     ),
                     shape = RoundedCornerShape(24.dp),
                     contentPadding = PaddingValues(horizontal = 24.dp, vertical = 10.dp)
@@ -301,7 +283,7 @@ fun HeroBanner(
                         imageVector = Icons.Default.PlayArrow,
                         contentDescription = null,
                         modifier = Modifier.size(18.dp),
-                        tint = LightText
+                        tint = MaterialTheme.colorScheme.onSecondaryContainer
                     )
                     Spacer(modifier = Modifier.width(6.dp))
                     Text(
@@ -314,10 +296,10 @@ fun HeroBanner(
                 Button(
                     onClick = { onMovieClick(movie.id) },
                     colors = ButtonDefaults.buttonColors(
-                        containerColor = Color.Black.copy(alpha = 0.35f),
-                        contentColor = LightText
+                        containerColor = MaterialTheme.colorScheme.surface.copy(alpha = 0.85f),
+                        contentColor = MaterialTheme.colorScheme.onSurface
                     ),
-                    border = BorderStroke(1.dp, Color.White.copy(alpha = 0.45f)),
+                    border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline.copy(alpha = 0.4f)),
                     shape = RoundedCornerShape(24.dp),
                     contentPadding = PaddingValues(horizontal = 24.dp, vertical = 10.dp)
                 ) {
@@ -329,34 +311,6 @@ fun HeroBanner(
                 }
             }
         }
-    }
-}
-
-
-@Composable
-fun RatingBadge(
-    rating: Double,
-    modifier: Modifier = Modifier
-) {
-    Row(
-        modifier = modifier
-            .background(DarkSurfaceVariant, RoundedCornerShape(4.dp))
-            .padding(horizontal = 6.dp, vertical = 2.dp),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Icon(
-            imageVector = Icons.Default.Star,
-            contentDescription = null,
-            tint = StarGold,
-            modifier = Modifier.size(13.dp)
-        )
-        Spacer(modifier = Modifier.width(3.dp))
-        Text(
-            text = String.format(Locale.US, "%.1f", rating),
-            color = LightText,
-            fontSize = 12.sp,
-            fontWeight = FontWeight.Bold
-        )
     }
 }
 
@@ -392,7 +346,7 @@ fun ErrorView(
         Spacer(modifier = Modifier.height(12.dp))
         Text(
             text = message,
-            color = MutedText,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
             style = MaterialTheme.typography.bodyMedium,
             textAlign = TextAlign.Center
         )
@@ -402,8 +356,7 @@ fun ErrorView(
             colors = ButtonDefaults.buttonColors(containerColor = NetflixRed),
             shape = RoundedCornerShape(24.dp)
         ) {
-            Text(text = stringResource(R.string.retry), color = LightText, fontWeight = FontWeight.Bold)
+            Text(text = stringResource(R.string.retry), color = Color.White, fontWeight = FontWeight.Bold)
         }
     }
 }
-

@@ -2,7 +2,6 @@ package com.example.jetpack.ui.screens.explore
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -40,10 +39,6 @@ import androidx.compose.ui.unit.sp
 import com.example.jetpack.R
 import com.example.jetpack.ui.components.ErrorView
 import com.example.jetpack.ui.components.MoviePosterCard
-import com.example.jetpack.ui.theme.DarkBackground
-import com.example.jetpack.ui.theme.DarkSurface
-import com.example.jetpack.ui.theme.LightText
-import com.example.jetpack.ui.theme.MutedText
 import com.example.jetpack.ui.theme.NetflixRed
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -61,24 +56,24 @@ fun ExploreScreen(
                 title = {
                     Text(
                         text = stringResource(R.string.explore_genres),
-                        color = LightText,
+                        color = MaterialTheme.colorScheme.onBackground,
                         fontWeight = FontWeight.Bold,
                         fontSize = 18.sp
                     )
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = DarkBackground
+                    containerColor = MaterialTheme.colorScheme.background
                 )
             )
         },
-        containerColor = DarkBackground,
+        containerColor = MaterialTheme.colorScheme.background,
         modifier = modifier
     ) { innerPadding ->
         Column(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(innerPadding)
-                .background(DarkBackground)
+                .background(MaterialTheme.colorScheme.background)
         ) {
             // Horizontal Genre Chips (Wrapped in Card)
             LazyRow(
@@ -92,14 +87,14 @@ fun ExploreScreen(
                         onClick = { viewModel.selectGenre(genre.id) },
                         shape = RoundedCornerShape(16.dp),
                         colors = CardDefaults.cardColors(
-                            containerColor = if (isSelected) NetflixRed else DarkSurface
+                            containerColor = if (isSelected) NetflixRed else MaterialTheme.colorScheme.surface
                         ),
-                        border = if (!isSelected) BorderStroke(1.dp, Color.White.copy(alpha = 0.08f)) else null,
+                        border = if (!isSelected) BorderStroke(1.dp, MaterialTheme.colorScheme.outline.copy(alpha = 0.2f)) else null,
                         elevation = CardDefaults.cardElevation(defaultElevation = if (isSelected) 4.dp else 1.dp)
                     ) {
                         Text(
                             text = genre.name,
-                            color = if (isSelected) Color.White else MutedText,
+                            color = if (isSelected) Color.White else MaterialTheme.colorScheme.onSurfaceVariant,
                             fontSize = 12.sp,
                             fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Medium,
                             modifier = Modifier.padding(horizontal = 14.dp, vertical = 8.dp)
@@ -144,4 +139,3 @@ fun ExploreScreen(
         }
     }
 }
-

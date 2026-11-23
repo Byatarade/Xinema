@@ -2,11 +2,11 @@ package com.example.jetpack.ui.navigation
 
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
@@ -20,6 +20,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import com.example.jetpack.core.common.ThemeHelper
 import com.example.jetpack.di.AppContainer
 import com.example.jetpack.ui.screens.detail.DetailScreen
 import com.example.jetpack.ui.screens.detail.DetailViewModel
@@ -30,15 +31,12 @@ import com.example.jetpack.ui.screens.home.HomeViewModel
 import com.example.jetpack.ui.screens.search.SearchScreen
 import com.example.jetpack.ui.screens.search.SearchViewModel
 import com.example.jetpack.ui.screens.settings.SettingsScreen
-import com.example.jetpack.ui.theme.DarkBackground
-import com.example.jetpack.ui.theme.DarkSurface
-import com.example.jetpack.ui.theme.LightText
-import com.example.jetpack.ui.theme.MutedText
-import com.example.jetpack.ui.theme.NetflixRed
 
 @Composable
 fun AppNavHost(
     appContainer: AppContainer,
+    currentTheme: String = ThemeHelper.THEME_SYSTEM,
+    onThemeChange: (String) -> Unit = {},
     modifier: Modifier = Modifier
 ) {
     val navController = rememberNavController()
@@ -51,8 +49,8 @@ fun AppNavHost(
         bottomBar = {
             if (showBottomBar) {
                 NavigationBar(
-                    containerColor = DarkSurface,
-                    tonalElevation = 0.dp
+                    containerColor = MaterialTheme.colorScheme.surface,
+                    tonalElevation = 2.dp
                 ) {
                     bottomNavItems.forEach { screen ->
                         val selected = currentRoute == screen.route
@@ -77,8 +75,8 @@ fun AppNavHost(
                             },
                             alwaysShowLabel = false,
                             colors = NavigationBarItemDefaults.colors(
-                                selectedIconColor = LightText,
-                                unselectedIconColor = MutedText.copy(alpha = 0.6f),
+                                selectedIconColor = MaterialTheme.colorScheme.primary,
+                                unselectedIconColor = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f),
                                 indicatorColor = Color.Transparent
                             )
                         )
@@ -86,7 +84,7 @@ fun AppNavHost(
                 }
             }
         },
-        containerColor = DarkBackground,
+        containerColor = MaterialTheme.colorScheme.background,
         modifier = modifier
     ) { innerPadding ->
         NavHost(
@@ -141,6 +139,8 @@ fun AppNavHost(
 
             composable(Screen.Settings.route) {
                 SettingsScreen(
+                    currentTheme = currentTheme,
+                    onThemeChange = onThemeChange,
                     onBackClick = {
                         navController.popBackStack()
                     }
@@ -149,6 +149,8 @@ fun AppNavHost(
 
             composable(Screen.Library.route) {
                 SettingsScreen(
+                    currentTheme = currentTheme,
+                    onThemeChange = onThemeChange,
                     onBackClick = {
                         navController.popBackStack()
                     }
@@ -189,4 +191,3 @@ fun AppNavHost(
         }
     }
 }
-

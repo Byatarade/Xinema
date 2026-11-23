@@ -47,6 +47,14 @@
     <string name="language_subtitle">Pilih bahasa tampilan aplikasi</string>
     <string name="english">Bahasa Inggris</string>
     <string name="indonesian">Bahasa Indonesia</string>
+
+    <!-- Settings & Theme (Night / Not Night) -->
+    <string name="theme">Mode Tema</string>
+    <string name="theme_subtitle">Pilih tampilan: Mode Malam atau Bukan Malam</string>
+    <string name="theme_system">Ikuti Sistem</string>
+    <string name="theme_light">Not Night (Mode Terang)</string>
+    <string name="theme_dark">Night (Mode Gelap)</string>
+
     <string name="app_info">Informasi Aplikasi</string>
     <string name="app_version">Versi</string>
     <string name="about_app">Tentang CineStream</string>

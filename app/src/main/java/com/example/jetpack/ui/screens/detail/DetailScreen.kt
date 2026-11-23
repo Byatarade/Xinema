@@ -53,12 +53,12 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
-import androidx.compose.ui.res.stringResource
 import com.example.jetpack.R
 import com.example.jetpack.core.common.Constants
 import com.example.jetpack.domain.model.Cast
@@ -67,12 +67,6 @@ import com.example.jetpack.ui.components.ErrorView
 import com.example.jetpack.ui.components.LoadingView
 import com.example.jetpack.ui.components.SectionRow
 import com.example.jetpack.ui.theme.AccentGreen
-import com.example.jetpack.ui.theme.DarkBackground
-import com.example.jetpack.ui.theme.DarkPill
-import com.example.jetpack.ui.theme.DarkSurface
-import com.example.jetpack.ui.theme.DarkSurfaceVariant
-import com.example.jetpack.ui.theme.LightText
-import com.example.jetpack.ui.theme.MutedText
 import com.example.jetpack.ui.theme.NetflixRed
 
 @Composable
@@ -84,16 +78,17 @@ fun DetailScreen(
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val context = LocalContext.current
+    val bgColor = MaterialTheme.colorScheme.background
 
     Scaffold(
-        containerColor = DarkBackground,
+        containerColor = bgColor,
         modifier = modifier
     ) { innerPadding ->
         Box(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(innerPadding)
-                .background(DarkBackground)
+                .background(bgColor)
         ) {
             when {
                 uiState.isLoading -> LoadingView()
@@ -126,7 +121,7 @@ fun DetailScreen(
                                 contentScale = ContentScale.Crop
                             )
 
-                            // Subtle bottom gradient
+                            // Bottom gradient blending smoothly to theme background
                             Box(
                                 modifier = Modifier
                                     .fillMaxSize()
@@ -135,8 +130,8 @@ fun DetailScreen(
                                             colorStops = arrayOf(
                                                 0.0f to Color.Black.copy(alpha = 0.5f),
                                                 0.4f to Color.Transparent,
-                                                0.8f to DarkBackground.copy(alpha = 0.8f),
-                                                1.0f to DarkBackground
+                                                0.8f to bgColor.copy(alpha = 0.8f),
+                                                1.0f to bgColor
                                             )
                                         )
                                     )
@@ -156,14 +151,14 @@ fun DetailScreen(
                                     modifier = Modifier
                                         .size(38.dp)
                                         .clip(CircleShape)
-                                        .background(Color.Black.copy(alpha = 0.55f))
+                                        .background(MaterialTheme.colorScheme.surface.copy(alpha = 0.8f))
                                         .clickable { onBackClick() },
                                     contentAlignment = Alignment.Center
                                 ) {
                                     Icon(
                                         imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                                         contentDescription = "Back",
-                                        tint = LightText,
+                                        tint = MaterialTheme.colorScheme.onSurface,
                                         modifier = Modifier.size(20.dp)
                                     )
                                 }
@@ -173,14 +168,14 @@ fun DetailScreen(
                                     modifier = Modifier
                                         .size(38.dp)
                                         .clip(CircleShape)
-                                        .background(Color.Black.copy(alpha = 0.55f))
+                                        .background(MaterialTheme.colorScheme.surface.copy(alpha = 0.8f))
                                         .clickable { },
                                     contentAlignment = Alignment.Center
                                 ) {
                                     Icon(
                                         imageVector = Icons.Default.MoreHoriz,
                                         contentDescription = "More",
-                                        tint = LightText,
+                                        tint = MaterialTheme.colorScheme.onSurface,
                                         modifier = Modifier.size(22.dp)
                                     )
                                 }
@@ -196,7 +191,7 @@ fun DetailScreen(
                             ) {
                                 Text(
                                     text = stringResource(R.string.preview),
-                                    color = LightText,
+                                    color = Color.White,
                                     fontSize = 11.sp,
                                     fontWeight = FontWeight.Medium
                                 )
@@ -236,7 +231,7 @@ fun DetailScreen(
                                         Icon(
                                             imageVector = if (uiState.isWatchlist) Icons.Default.Check else Icons.Default.Add,
                                             contentDescription = if (uiState.isWatchlist) stringResource(R.string.in_watchlist) else stringResource(R.string.my_list),
-                                            tint = LightText,
+                                            tint = MaterialTheme.colorScheme.onBackground,
                                             modifier = Modifier.size(24.dp)
                                         )
                                     }
@@ -248,7 +243,7 @@ fun DetailScreen(
                                         Icon(
                                             imageVector = Icons.Default.FileDownload,
                                             contentDescription = stringResource(R.string.download),
-                                            tint = LightText,
+                                            tint = MaterialTheme.colorScheme.onBackground,
                                             modifier = Modifier.size(22.dp)
                                         )
                                     }
@@ -275,25 +270,25 @@ fun DetailScreen(
 
                                 Text(
                                     text = releaseYear,
-                                    color = MutedText,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                                     fontSize = 13.sp
                                 )
 
                                 Text(
                                     text = durationText,
-                                    color = MutedText,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                                     fontSize = 13.sp
                                 )
 
                                 // R / Age rating badge
                                 Box(
                                     modifier = Modifier
-                                        .border(1.dp, Color.White.copy(alpha = 0.35f), RoundedCornerShape(3.dp))
+                                        .border(1.dp, MaterialTheme.colorScheme.outline.copy(alpha = 0.4f), RoundedCornerShape(3.dp))
                                         .padding(horizontal = 5.dp, vertical = 1.dp)
                                 ) {
                                     Text(
                                         text = "R",
-                                        color = MutedText,
+                                        color = MaterialTheme.colorScheme.onSurfaceVariant,
                                         fontSize = 10.sp,
                                         fontWeight = FontWeight.Bold
                                     )
@@ -302,12 +297,12 @@ fun DetailScreen(
                                 // HD badge
                                 Box(
                                     modifier = Modifier
-                                        .border(1.dp, Color.White.copy(alpha = 0.35f), RoundedCornerShape(3.dp))
+                                        .border(1.dp, MaterialTheme.colorScheme.outline.copy(alpha = 0.4f), RoundedCornerShape(3.dp))
                                         .padding(horizontal = 5.dp, vertical = 1.dp)
                                 ) {
                                     Text(
                                         text = "HD",
-                                        color = MutedText,
+                                        color = MaterialTheme.colorScheme.onSurfaceVariant,
                                         fontSize = 10.sp,
                                         fontWeight = FontWeight.Bold
                                     )
@@ -331,14 +326,14 @@ fun DetailScreen(
                                     Icon(
                                         imageVector = Icons.Default.ThumbUp,
                                         contentDescription = null,
-                                        tint = LightText,
+                                        tint = Color.White,
                                         modifier = Modifier.size(11.dp)
                                     )
                                 }
 
                                 Text(
                                     text = stringResource(R.string.most_liked),
-                                    color = LightText,
+                                    color = MaterialTheme.colorScheme.onBackground,
                                     fontSize = 13.sp,
                                     fontWeight = FontWeight.Bold
                                 )
@@ -363,8 +358,8 @@ fun DetailScreen(
                                     }
                                 },
                                 colors = ButtonDefaults.buttonColors(
-                                    containerColor = DarkPill,
-                                    contentColor = LightText
+                                    containerColor = MaterialTheme.colorScheme.secondaryContainer,
+                                    contentColor = MaterialTheme.colorScheme.onSecondaryContainer
                                 ),
                                 shape = RoundedCornerShape(24.dp),
                                 modifier = Modifier
@@ -375,14 +370,14 @@ fun DetailScreen(
                                     imageVector = Icons.Default.PlayArrow,
                                     contentDescription = null,
                                     modifier = Modifier.size(20.dp),
-                                    tint = LightText
+                                    tint = MaterialTheme.colorScheme.onSecondaryContainer
                                 )
                                 Spacer(modifier = Modifier.width(6.dp))
                                 Text(
                                     text = stringResource(R.string.hero_play),
                                     fontWeight = FontWeight.Bold,
                                     fontSize = 15.sp,
-                                    color = LightText
+                                    color = MaterialTheme.colorScheme.onSecondaryContainer
                                 )
                             }
 
@@ -391,7 +386,7 @@ fun DetailScreen(
                             // 6. Prolog (Storyline) Section
                             Text(
                                 text = stringResource(R.string.prolog),
-                                color = LightText,
+                                color = MaterialTheme.colorScheme.onBackground,
                                 style = MaterialTheme.typography.titleMedium,
                                 fontWeight = FontWeight.Bold,
                                 fontSize = 18.sp
@@ -399,7 +394,7 @@ fun DetailScreen(
                             Spacer(modifier = Modifier.height(8.dp))
                             Text(
                                 text = movie.overview.ifBlank { stringResource(R.string.no_synopsis) },
-                                color = MutedText,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
                                 style = MaterialTheme.typography.bodyMedium,
                                 lineHeight = 21.sp,
                                 fontSize = 13.sp
@@ -411,7 +406,7 @@ fun DetailScreen(
                             if (movie.casts.isNotEmpty()) {
                                 Text(
                                     text = stringResource(R.string.top_cast),
-                                    color = LightText,
+                                    color = MaterialTheme.colorScheme.onBackground,
                                     style = MaterialTheme.typography.titleMedium,
                                     fontWeight = FontWeight.Bold,
                                     fontSize = 18.sp
@@ -431,7 +426,7 @@ fun DetailScreen(
                                 Spacer(modifier = Modifier.height(24.dp))
                                 Text(
                                     text = stringResource(R.string.trailers_clips),
-                                    color = LightText,
+                                    color = MaterialTheme.colorScheme.onBackground,
                                     style = MaterialTheme.typography.titleMedium,
                                     fontWeight = FontWeight.Bold,
                                     fontSize = 18.sp
@@ -486,13 +481,13 @@ fun CastItem(cast: Cast) {
             modifier = Modifier
                 .size(56.dp)
                 .clip(CircleShape)
-                .background(DarkSurfaceVariant),
+                .background(MaterialTheme.colorScheme.surfaceVariant),
             contentScale = ContentScale.Crop
         )
         Spacer(modifier = Modifier.height(6.dp))
         Text(
             text = cast.name,
-            color = LightText,
+            color = MaterialTheme.colorScheme.onBackground,
             fontSize = 11.sp,
             fontWeight = FontWeight.SemiBold,
             maxLines = 1,
@@ -501,7 +496,7 @@ fun CastItem(cast: Cast) {
         cast.character?.let { charName ->
             Text(
                 text = charName,
-                color = MutedText,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
                 fontSize = 9.sp,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis
@@ -519,8 +514,8 @@ fun VideoThumbnailItem(
         onClick = onClick,
         modifier = Modifier.width(200.dp),
         shape = RoundedCornerShape(14.dp),
-        colors = CardDefaults.cardColors(containerColor = DarkSurface),
-        border = BorderStroke(1.dp, Color.White.copy(alpha = 0.08f)),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline.copy(alpha = 0.2f)),
         elevation = CardDefaults.cardElevation(defaultElevation = 3.dp, pressedElevation = 6.dp)
     ) {
         Column {
@@ -528,7 +523,7 @@ fun VideoThumbnailItem(
                 modifier = Modifier
                     .fillMaxWidth()
                     .aspectRatio(16f / 9f)
-                    .background(DarkSurfaceVariant),
+                    .background(MaterialTheme.colorScheme.surfaceVariant),
                 contentAlignment = Alignment.Center
             ) {
                 AsyncImage(
@@ -547,7 +542,7 @@ fun VideoThumbnailItem(
                     Icon(
                         imageVector = Icons.Default.PlayArrow,
                         contentDescription = null,
-                        tint = LightText,
+                        tint = Color.White,
                         modifier = Modifier.size(22.dp)
                     )
                 }
@@ -555,7 +550,7 @@ fun VideoThumbnailItem(
 
             Text(
                 text = video.name,
-                color = LightText,
+                color = MaterialTheme.colorScheme.onSurface,
                 fontSize = 11.sp,
                 fontWeight = FontWeight.Medium,
                 maxLines = 1,
@@ -565,5 +560,3 @@ fun VideoThumbnailItem(
         }
     }
 }
-
-

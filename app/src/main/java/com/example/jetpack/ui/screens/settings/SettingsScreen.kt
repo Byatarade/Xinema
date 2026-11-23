@@ -22,8 +22,12 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.BrightnessAuto
 import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.DarkMode
 import androidx.compose.material.icons.filled.Info
+import androidx.compose.material.icons.filled.LightMode
+import androidx.compose.material.icons.filled.Palette
 import androidx.compose.material.icons.filled.Translate
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -47,16 +51,12 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.jetpack.R
 import com.example.jetpack.core.common.LocaleHelper
-import com.example.jetpack.ui.theme.DarkBackground
-import com.example.jetpack.ui.theme.DarkPill
-import com.example.jetpack.ui.theme.DarkSurface
-import com.example.jetpack.ui.theme.DarkSurfaceVariant
-import com.example.jetpack.ui.theme.LightText
-import com.example.jetpack.ui.theme.MutedText
-import com.example.jetpack.ui.theme.NetflixRed
+import com.example.jetpack.core.common.ThemeHelper
 
 @Composable
 fun SettingsScreen(
+    currentTheme: String = ThemeHelper.THEME_SYSTEM,
+    onThemeChange: (String) -> Unit = {},
     onBackClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -65,14 +65,14 @@ fun SettingsScreen(
     val scrollState = rememberScrollState()
 
     Scaffold(
-        containerColor = DarkBackground,
+        containerColor = MaterialTheme.colorScheme.background,
         modifier = modifier
     ) { innerPadding ->
         Column(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(innerPadding)
-                .background(DarkBackground)
+                .background(MaterialTheme.colorScheme.background)
                 .verticalScroll(scrollState)
         ) {
             // Header with Back Button and Title
@@ -87,14 +87,14 @@ fun SettingsScreen(
                     modifier = Modifier
                         .size(40.dp)
                         .clip(CircleShape)
-                        .background(DarkSurfaceVariant.copy(alpha = 0.85f))
+                        .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.85f))
                         .clickable { onBackClick() },
                     contentAlignment = Alignment.Center
                 ) {
                     Icon(
                         imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                         contentDescription = "Back",
-                        tint = LightText,
+                        tint = MaterialTheme.colorScheme.onSurface,
                         modifier = Modifier.size(20.dp)
                     )
                 }
@@ -103,13 +103,76 @@ fun SettingsScreen(
 
                 Text(
                     text = stringResource(R.string.settings_title),
-                    color = LightText,
+                    color = MaterialTheme.colorScheme.onBackground,
                     fontSize = 20.sp,
                     fontWeight = FontWeight.Bold
                 )
             }
 
             Spacer(modifier = Modifier.height(12.dp))
+
+            // Section: Theme (Not Night & Night)
+            Column(modifier = Modifier.padding(horizontal = 20.dp)) {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Palette,
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.primary,
+                        modifier = Modifier.size(20.dp)
+                    )
+                    Text(
+                        text = stringResource(R.string.theme),
+                        color = MaterialTheme.colorScheme.onBackground,
+                        fontSize = 17.sp,
+                        fontWeight = FontWeight.Bold
+                    )
+                }
+
+                Spacer(modifier = Modifier.height(4.dp))
+                Text(
+                    text = stringResource(R.string.theme_subtitle),
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    fontSize = 13.sp
+                )
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                // Option: System Default
+                ThemeOptionCard(
+                    icon = "🌓",
+                    title = stringResource(R.string.theme_system),
+                    subtitle = "Auto (System)",
+                    isSelected = currentTheme == ThemeHelper.THEME_SYSTEM,
+                    onClick = { onThemeChange(ThemeHelper.THEME_SYSTEM) }
+                )
+
+                Spacer(modifier = Modifier.height(10.dp))
+
+                // Option: Not Night (Light Mode)
+                ThemeOptionCard(
+                    icon = "☀️",
+                    title = stringResource(R.string.theme_light),
+                    subtitle = "Light Mode",
+                    isSelected = currentTheme == ThemeHelper.THEME_LIGHT,
+                    onClick = { onThemeChange(ThemeHelper.THEME_LIGHT) }
+                )
+
+                Spacer(modifier = Modifier.height(10.dp))
+
+                // Option: Night (Dark Mode)
+                ThemeOptionCard(
+                    icon = "🌙",
+                    title = stringResource(R.string.theme_dark),
+                    subtitle = "Dark Mode",
+                    isSelected = currentTheme == ThemeHelper.THEME_DARK,
+                    onClick = { onThemeChange(ThemeHelper.THEME_DARK) }
+                )
+            }
+
+            Spacer(modifier = Modifier.height(32.dp))
 
             // Section: Language
             Column(modifier = Modifier.padding(horizontal = 20.dp)) {
@@ -120,12 +183,12 @@ fun SettingsScreen(
                     Icon(
                         imageVector = Icons.Default.Translate,
                         contentDescription = null,
-                        tint = NetflixRed,
+                        tint = MaterialTheme.colorScheme.primary,
                         modifier = Modifier.size(20.dp)
                     )
                     Text(
                         text = stringResource(R.string.language),
-                        color = LightText,
+                        color = MaterialTheme.colorScheme.onBackground,
                         fontSize = 17.sp,
                         fontWeight = FontWeight.Bold
                     )
@@ -134,7 +197,7 @@ fun SettingsScreen(
                 Spacer(modifier = Modifier.height(4.dp))
                 Text(
                     text = stringResource(R.string.language_subtitle),
-                    color = MutedText,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                     fontSize = 13.sp
                 )
 
@@ -155,7 +218,7 @@ fun SettingsScreen(
                     }
                 )
 
-                Spacer(modifier = Modifier.height(12.dp))
+                Spacer(modifier = Modifier.height(10.dp))
 
                 // Option: Bahasa Indonesia
                 LanguageOptionCard(
@@ -173,7 +236,7 @@ fun SettingsScreen(
                 )
             }
 
-            Spacer(modifier = Modifier.height(36.dp))
+            Spacer(modifier = Modifier.height(32.dp))
 
             // Section: About App
             Column(modifier = Modifier.padding(horizontal = 20.dp)) {
@@ -184,12 +247,12 @@ fun SettingsScreen(
                     Icon(
                         imageVector = Icons.Default.Info,
                         contentDescription = null,
-                        tint = NetflixRed,
+                        tint = MaterialTheme.colorScheme.primary,
                         modifier = Modifier.size(20.dp)
                     )
                     Text(
                         text = stringResource(R.string.app_info),
-                        color = LightText,
+                        color = MaterialTheme.colorScheme.onBackground,
                         fontSize = 17.sp,
                         fontWeight = FontWeight.Bold
                     )
@@ -200,8 +263,8 @@ fun SettingsScreen(
                 Card(
                     modifier = Modifier.fillMaxWidth(),
                     shape = RoundedCornerShape(16.dp),
-                    colors = CardDefaults.cardColors(containerColor = DarkSurface),
-                    border = BorderStroke(1.dp, Color.White.copy(alpha = 0.08f))
+                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+                    border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline.copy(alpha = 0.2f))
                 ) {
                     Column(modifier = Modifier.padding(18.dp)) {
                         Row(
@@ -211,18 +274,18 @@ fun SettingsScreen(
                         ) {
                             Text(
                                 text = stringResource(R.string.about_app),
-                                color = LightText,
+                                color = MaterialTheme.colorScheme.onSurface,
                                 fontSize = 15.sp,
                                 fontWeight = FontWeight.Bold
                             )
                             Box(
                                 modifier = Modifier
-                                    .background(DarkPill, RoundedCornerShape(8.dp))
+                                    .background(MaterialTheme.colorScheme.secondaryContainer, RoundedCornerShape(8.dp))
                                     .padding(horizontal = 10.dp, vertical = 4.dp)
                             ) {
                                 Text(
                                     text = "v1.0.0",
-                                    color = NetflixRed,
+                                    color = MaterialTheme.colorScheme.primary,
                                     fontSize = 12.sp,
                                     fontWeight = FontWeight.Bold
                                 )
@@ -233,7 +296,7 @@ fun SettingsScreen(
 
                         Text(
                             text = stringResource(R.string.about_description),
-                            color = MutedText,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
                             fontSize = 13.sp,
                             lineHeight = 19.sp
                         )
@@ -242,6 +305,97 @@ fun SettingsScreen(
             }
 
             Spacer(modifier = Modifier.height(40.dp))
+        }
+    }
+}
+
+@Composable
+private fun ThemeOptionCard(
+    icon: String,
+    title: String,
+    subtitle: String,
+    isSelected: Boolean,
+    onClick: () -> Unit
+) {
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clip(RoundedCornerShape(16.dp))
+            .clickable { onClick() },
+        shape = RoundedCornerShape(16.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = if (isSelected) MaterialTheme.colorScheme.surfaceVariant else MaterialTheme.colorScheme.surface
+        ),
+        border = BorderStroke(
+            width = if (isSelected) 1.5.dp else 1.dp,
+            color = if (isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.outline.copy(alpha = 0.2f)
+        )
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 18.dp, vertical = 14.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(14.dp)
+            ) {
+                Box(
+                    modifier = Modifier
+                        .size(42.dp)
+                        .clip(CircleShape)
+                        .background(MaterialTheme.colorScheme.surfaceVariant),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(
+                        text = icon,
+                        fontSize = 20.sp
+                    )
+                }
+
+                Column {
+                    Text(
+                        text = title,
+                        color = MaterialTheme.colorScheme.onSurface,
+                        fontSize = 15.sp,
+                        fontWeight = if (isSelected) FontWeight.Bold else FontWeight.SemiBold
+                    )
+                    Spacer(modifier = Modifier.height(2.dp))
+                    Text(
+                        text = subtitle,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        fontSize = 12.sp
+                    )
+                }
+            }
+
+            Box(
+                modifier = Modifier
+                    .size(24.dp)
+                    .clip(CircleShape)
+                    .background(
+                        if (isSelected) MaterialTheme.colorScheme.primary else Color.Transparent
+                    ),
+                contentAlignment = Alignment.Center
+            ) {
+                if (isSelected) {
+                    Icon(
+                        imageVector = Icons.Default.Check,
+                        contentDescription = "Selected",
+                        tint = Color.White,
+                        modifier = Modifier.size(16.dp)
+                    )
+                } else {
+                    Box(
+                        modifier = Modifier
+                            .size(20.dp)
+                            .clip(CircleShape)
+                            .background(MaterialTheme.colorScheme.outline.copy(alpha = 0.3f))
+                    )
+                }
+            }
         }
     }
 }
@@ -261,17 +415,17 @@ private fun LanguageOptionCard(
             .clickable { onClick() },
         shape = RoundedCornerShape(16.dp),
         colors = CardDefaults.cardColors(
-            containerColor = if (isSelected) DarkSurfaceVariant else DarkSurface
+            containerColor = if (isSelected) MaterialTheme.colorScheme.surfaceVariant else MaterialTheme.colorScheme.surface
         ),
         border = BorderStroke(
             width = if (isSelected) 1.5.dp else 1.dp,
-            color = if (isSelected) NetflixRed else Color.White.copy(alpha = 0.08f)
+            color = if (isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.outline.copy(alpha = 0.2f)
         )
     ) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 18.dp, vertical = 16.dp),
+                .padding(horizontal = 18.dp, vertical = 14.dp),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
@@ -279,51 +433,41 @@ private fun LanguageOptionCard(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(14.dp)
             ) {
-                // Flag Container
                 Box(
                     modifier = Modifier
-                        .size(46.dp)
+                        .size(42.dp)
                         .clip(CircleShape)
-                        .background(Color.White.copy(alpha = 0.06f)),
+                        .background(MaterialTheme.colorScheme.surfaceVariant),
                     contentAlignment = Alignment.Center
                 ) {
                     Text(
                         text = flag,
-                        fontSize = 24.sp
+                        fontSize = 22.sp
                     )
                 }
 
                 Column {
                     Text(
                         text = title,
-                        color = LightText,
+                        color = MaterialTheme.colorScheme.onSurface,
                         fontSize = 15.sp,
                         fontWeight = if (isSelected) FontWeight.Bold else FontWeight.SemiBold
                     )
                     Spacer(modifier = Modifier.height(2.dp))
                     Text(
                         text = subtitle,
-                        color = MutedText,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
                         fontSize = 12.sp
                     )
                 }
             }
 
-            // Radio / Check Indicator
             Box(
                 modifier = Modifier
                     .size(24.dp)
                     .clip(CircleShape)
                     .background(
-                        if (isSelected) NetflixRed else Color.Transparent
-                    )
-                    .then(
-                        if (!isSelected) {
-                            Modifier.background(
-                                color = Color.Transparent,
-                                shape = CircleShape
-                            )
-                        } else Modifier
+                        if (isSelected) MaterialTheme.colorScheme.primary else Color.Transparent
                     ),
                 contentAlignment = Alignment.Center
             ) {
@@ -331,15 +475,15 @@ private fun LanguageOptionCard(
                     Icon(
                         imageVector = Icons.Default.Check,
                         contentDescription = "Selected",
-                        tint = LightText,
+                        tint = Color.White,
                         modifier = Modifier.size(16.dp)
                     )
                 } else {
                     Box(
                         modifier = Modifier
-                            .size(22.dp)
+                            .size(20.dp)
                             .clip(CircleShape)
-                            .background(Color.White.copy(alpha = 0.15f))
+                            .background(MaterialTheme.colorScheme.outline.copy(alpha = 0.3f))
                     )
                 }
             }
