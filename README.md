@@ -382,7 +382,7 @@ Proyek ini dirancang, diarsitekruri, dan dibangun oleh:
 *Android & Mobile Software Developer*
 
 [![GitHub Profile](https://img.shields.io/badge/GitHub-Byatarade-181717?style=for-the-badge&logo=github)](https://github.com/Byatarade)
-[![Project Repository](https://img.shields.io/badge/Repository-Jetpack--Compose-E50914?style=for-the-badge&logo=git)](https://github.com/Byatarade/Jetpack-Compose)
+[![Project Repository](https://img.shields.io/badge/Repository-Jetpack--Compose-E50914?style=for-the-badge&logo=git)](https://github.com/Byatarade/Xinema)
 
 *"Dibuat sebagai implementasi komprehensif teknologi Jetpack Compose, Clean Architecture, dan Material Design 3 di platform Android."*
 
